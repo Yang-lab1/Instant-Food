@@ -163,7 +163,7 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      padding: 34px 24px 18px;
+      padding: 34px 24px 0;
       overflow: hidden;
     }
 
@@ -196,7 +196,7 @@
       inset: 0;
       background:
         radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 28%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.08) 24%, rgba(0, 0, 0, 0.56) 100%);
+        linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.08) 34%, rgba(0, 0, 0, 0.16) 68%, rgba(0, 0, 0, 0.36) 100%);
       pointer-events: none;
     }
 
@@ -439,10 +439,9 @@
       z-index: 1;
       display: flex;
       justify-content: center;
-      padding: 18px 24px 14px;
+      padding: 14px 24px calc(10px + env(safe-area-inset-bottom, 0px));
       margin: 0 -24px;
-      background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.98) 100%);
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(0, 0, 0, 0.54) 32%, rgba(0, 0, 0, 0.88) 100%);
     }
 
     .mode-pill {
@@ -663,10 +662,10 @@
     .home-indicator {
       width: 134px;
       height: 5px;
-      margin: 0 auto;
+      margin: 4px auto calc(10px + env(safe-area-inset-bottom, 0px));
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.88);
-      opacity: 0.82;
+      opacity: 0.58;
     }
 
     @media (max-height: 760px) {
@@ -691,7 +690,7 @@
       }
 
       .mode-rail {
-        padding-top: 14px;
+        padding-top: 12px;
       }
     }
   </style>
@@ -812,7 +811,7 @@
       <div class="gallery-modal" id="galleryModal" hidden aria-hidden="true">
         <div class="gallery-panel" role="dialog" aria-modal="true" aria-labelledby="galleryCounter">
           <div class="gallery-toolbar">
-            <button class="gallery-pill" id="closeGalleryButton" type="button" aria-label="关闭已拍预览">关闭</button>
+            <button class="gallery-pill" id="closeGalleryButton" data-shell-ignore-camera-close="true" type="button" aria-label="关闭已拍预览">关闭</button>
             <div class="gallery-counter" id="galleryCounter">1 / 3</div>
             <button class="gallery-pill" id="deletePhotoButton" type="button" aria-label="删除当前图片">
               删除

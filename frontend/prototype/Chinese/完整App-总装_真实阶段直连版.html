@@ -1124,6 +1124,46 @@
 
       function buildStage1ShellCss() {
         return [
+          ".stage-onboarding .page-footer {",
+          "  transform: translateY(-10px);",
+          "  gap: 10px;",
+          "}",
+          ".stage-onboarding .go-shell {",
+          "  width: min(100%, 332px) !important;",
+          "}",
+          ".stage-onboarding .go-rail {",
+          "  height: 58px !important;",
+          "}",
+          ".stage-onboarding .go-knob {",
+          "  top: 5px !important;",
+          "  left: 5px !important;",
+          "  width: 112px !important;",
+          "  height: 48px !important;",
+          "  font-size: 0.96rem !important;",
+          "  letter-spacing: 0.01em !important;",
+          "}",
+          ".stage-onboarding .go-trail {",
+          "  top: 5px !important;",
+          "  bottom: 5px !important;",
+          "  left: 5px !important;",
+          "  width: calc(112px + var(--knob-offset)) !important;",
+          "}",
+          ".stage-onboarding .go-label {",
+          "  margin-top: 8px !important;",
+          "  font-size: 0.68rem !important;",
+          "}",
+          "@media (max-width: 480px) {",
+          "  .stage-onboarding .go-shell {",
+          "    width: min(100%, 324px) !important;",
+          "  }",
+          "  .stage-onboarding .go-knob {",
+          "    width: 106px !important;",
+          "    height: 46px !important;",
+          "  }",
+          "  .stage-onboarding .go-trail {",
+          "    width: calc(106px + var(--knob-offset)) !important;",
+          "  }",
+          "}",
           ".go-knob {",
           "  will-change: transform;",
           "}",
@@ -2729,6 +2769,16 @@
         let startOffset = 0;
         let currentOffset = 0;
         let maxOffset = 0;
+        let wasReady = false;
+        let hapticReady = true;
+
+        const triggerHaptic = (pattern) => {
+          try {
+            if (typeof view.navigator?.vibrate === "function") {
+              view.navigator.vibrate(pattern);
+            }
+          } catch (error) {}
+        };
 
         rail.style.touchAction = "none";
         knob.style.touchAction = "none";
@@ -2739,6 +2789,16 @@
         const setReady = (ready) => {
           shell.classList.toggle("is-ready", ready);
           label.textContent = ready ? readyLabel : idleLabel;
+          if (ready !== wasReady) {
+            if (ready && dragging && hapticReady) {
+              triggerHaptic(12);
+              hapticReady = false;
+            }
+            if (!ready) {
+              hapticReady = true;
+            }
+            wasReady = ready;
+          }
         };
 
         const syncOffset = (offset, scale = dragging ? 0.985 : 1) => {
@@ -2762,7 +2822,8 @@
         };
 
         const measure = () => {
-          maxOffset = Math.max(0, rail.clientWidth - knob.clientWidth - 12);
+          const knobInset = Number.parseFloat(view.getComputedStyle(knob).left || "6") || 6;
+          maxOffset = Math.max(0, rail.clientWidth - knob.clientWidth - (knobInset * 2));
           syncOffset(Math.min(currentOffset, maxOffset), dragging ? 0.985 : 1);
         };
         shell.__shellStage1Measure = measure;
@@ -2786,6 +2847,7 @@
             ? currentOffset
             : clamp(event.clientX - railRect.left - knob.offsetWidth / 2);
           startX = event.clientX;
+          hapticReady = true;
           shell.classList.add("is-shell-dragging");
           knob.style.transition = "none";
           syncOffset(startOffset, 0.985);
@@ -2810,7 +2872,7 @@
 
           const nextOffset = startOffset + (event.clientX - startX);
           const progress = syncOffset(nextOffset, 0.985);
-          setReady(progress >= 0.62);
+          setReady(progress >= 0.72);
           event.preventDefault();
           event.stopPropagation();
           if (typeof event.stopImmediatePropagation === "function") {
@@ -2830,7 +2892,7 @@
           dragging = false;
           activePointerId = null;
           shell.classList.remove("is-shell-dragging");
-          const shouldEnter = maxOffset > 0 && currentOffset / maxOffset >= 0.62;
+          const shouldEnter = maxOffset > 0 && currentOffset / maxOffset >= 0.72;
           animateTo(shouldEnter ? maxOffset : 0, shouldEnter);
 
           if (releasePointerId !== null && typeof rail.releasePointerCapture === "function") {
@@ -2850,6 +2912,7 @@
           }
 
           if (shouldEnter) {
+            triggerHaptic([12, 32, 16]);
             view.setTimeout(enterAuth, 140);
           }
         };
@@ -4027,6 +4090,14 @@
 
         const isCameraCloseTrigger = (element) => {
           if (!element || state.currentSubRoute !== "camera") {
+            return false;
+          }
+          if (
+            element.dataset.shellIgnoreCameraClose === "true" ||
+            element.closest("[data-shell-ignore-camera-close='true']") ||
+            element.id === "closeGalleryButton" ||
+            element.closest(".gallery-modal")
+          ) {
             return false;
           }
 
