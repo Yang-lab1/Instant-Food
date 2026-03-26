@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/prototype/Chinese/%E5%AE%8C%E6%95%B4App-%E6%80%BB%E8%A3%85.html",
+      "permanent": false
+    }
+  ]
+}
