@@ -158,14 +158,85 @@
     }
 
     .screen {
+      position: relative;
       display: flex;
       flex-direction: column;
       flex: 1;
       min-height: 0;
       padding: 34px 24px 18px;
+      overflow: hidden;
+    }
+
+    .camera-feed {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 26%),
+        radial-gradient(circle at 28% 72%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 20%),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.98) 0%, rgba(40, 38, 32, 0.96) 100%);
+    }
+
+    .camera-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #050505;
+    }
+
+    .camera-feed.is-environment .camera-preview {
+      transform: none;
+    }
+
+    .camera-feed::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 28%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.08) 24%, rgba(0, 0, 0, 0.56) 100%);
+      pointer-events: none;
+    }
+
+    .camera-fallback {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 174px;
+      z-index: 2;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(10, 10, 12, 0.64);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .camera-fallback p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .camera-fallback button {
+      margin-top: 10px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     .top-actions {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -188,6 +259,14 @@
       cursor: pointer;
     }
 
+    .icon-button.is-active {
+      background: rgba(142, 182, 155, 0.22);
+      border-color: rgba(142, 182, 155, 0.52);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 10px 22px rgba(35, 83, 71, 0.28);
+    }
+
     .icon-button.ghost {
       background: transparent;
       border-color: transparent;
@@ -196,6 +275,8 @@
     }
 
     .viewfinder {
+      position: relative;
+      z-index: 1;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -300,6 +381,8 @@
       background-repeat: no-repeat;
       box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
       overflow: hidden;
+      opacity: 0;
+      transform: scale(0.9);
     }
 
     .stack-photo::after {
@@ -312,8 +395,6 @@
     .stack-photo.back {
       left: -4px;
       bottom: 3px;
-      background-image: url("../../assets/backgrounds/1.png");
-      background-position: 30% center;
       transform: rotate(-11deg);
       z-index: 0;
     }
@@ -321,8 +402,6 @@
     .stack-photo.middle {
       left: 13px;
       top: 3px;
-      background-image: url("../../assets/backgrounds/3.jpg");
-      background-position: center center;
       transform: rotate(-4deg);
       z-index: 1;
     }
@@ -332,8 +411,6 @@
       top: 8px;
       width: 44px;
       height: 52px;
-      background-image: url("../../assets/backgrounds/4.jpg");
-      background-position: center 42%;
       z-index: 2;
     }
 
@@ -358,6 +435,8 @@
     }
 
     .mode-rail {
+      position: relative;
+      z-index: 1;
       display: flex;
       justify-content: center;
       padding: 18px 24px 14px;
@@ -670,6 +749,14 @@
     </div>
 
     <section class="screen">
+      <div class="camera-feed" id="cameraFeed">
+        <video id="cameraPreview" class="camera-preview" autoplay playsinline muted></video>
+        <div class="camera-fallback" id="cameraFallback" hidden>
+          <p id="cameraFallbackText">无法访问设备相机，请允许权限，或先使用上传功能。</p>
+          <button id="retryCameraButton" type="button">重新开启相机</button>
+        </div>
+      </div>
+
       <header class="top-actions camera-topbar wx-miniapp-nav" data-title="拍摄">
         <button class="icon-button ghost" type="button" aria-label="关闭">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
@@ -679,7 +766,7 @@
 
         <h1 class="wx-nav-title">拍摄</h1>
 
-        <button class="icon-button" type="button" aria-label="手电筒">
+        <button class="icon-button" id="flashToggleButton" type="button" aria-label="手电筒" aria-pressed="false">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M10.2 3.6h3.6l.8 3.3H9.4l.8-3.3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
             <path d="M9.8 6.9h4.4v4.2l-1.1 1.5v5.8h-2.2v-5.8l-1.1-1.5V6.9Z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
@@ -708,7 +795,7 @@
               <span class="stack-photo back"></span>
               <span class="stack-photo middle"></span>
               <span class="stack-photo front"></span>
-              <span class="stack-badge" id="capturedCountBadge">3</span>
+              <span class="stack-badge" id="capturedCountBadge">0</span>
             </span>
             <span class="capture-label">已拍</span>
           </button>
@@ -720,6 +807,7 @@
       </div>
 
       <input id="galleryUploadInput" type="file" accept="image/*" multiple hidden />
+      <canvas id="cameraCaptureCanvas" hidden aria-hidden="true"></canvas>
 
       <div class="gallery-modal" id="galleryModal" hidden aria-hidden="true">
         <div class="gallery-panel" role="dialog" aria-modal="true" aria-labelledby="galleryCounter">
@@ -759,26 +847,30 @@
       const stackBack = document.querySelector(".stack-photo.back");
       const stackMiddle = document.querySelector(".stack-photo.middle");
       const stackFront = document.querySelector(".stack-photo.front");
+      const cameraFeed = document.getElementById("cameraFeed");
+      const cameraPreview = document.getElementById("cameraPreview");
+      const cameraFallback = document.getElementById("cameraFallback");
+      const cameraFallbackText = document.getElementById("cameraFallbackText");
+      const retryCameraButton = document.getElementById("retryCameraButton");
+      const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
+      const flashToggleButton = document.getElementById("flashToggleButton");
 
-      const presetPhotos = [
-        "../../assets/backgrounds/1.png",
-        "../../assets/backgrounds/3.jpg",
-        "../../assets/backgrounds/4.jpg"
-      ];
-      const simulatedShots = [
-        "../../assets/backgrounds/2.jpg",
-        "../../assets/backgrounds/5.png",
-        "../../assets/backgrounds/95dc01ddadd7c54292be548b216e61d8.jpg"
-      ];
+      const presetPhotos = [];
 
       const state = {
         currentIndex: 0,
-        nextSimulatedShotIndex: 0,
         photos: presetPhotos.map((src, index) => ({
           id: "preset-" + index,
           src,
           kind: "preset"
         }))
+      };
+      const cameraState = {
+        stream: null,
+        openPromise: null,
+        activeFacingMode: "",
+        torchSupported: false,
+        torchEnabled: false
       };
 
       function clampIndex(index) {
@@ -789,6 +881,157 @@
       function revokePhoto(photo) {
         if (photo && photo.kind === "upload" && photo.objectUrl) {
           URL.revokeObjectURL(photo.objectUrl);
+        }
+      }
+
+      function showCameraFallback(message) {
+        if (!cameraFallback || !cameraFallbackText) return;
+        cameraFallbackText.textContent = message || "无法访问设备相机，请允许权限，或先使用上传功能。";
+        cameraFallback.hidden = false;
+      }
+
+      function hideCameraFallback() {
+        if (!cameraFallback) return;
+        cameraFallback.hidden = true;
+      }
+
+      function updateTorchUI() {
+        if (!flashToggleButton) return;
+        flashToggleButton.classList.toggle("is-active", cameraState.torchEnabled);
+        flashToggleButton.setAttribute("aria-pressed", cameraState.torchEnabled ? "true" : "false");
+        flashToggleButton.setAttribute(
+          "aria-label",
+          cameraState.torchEnabled ? "关闭手电筒" : "打开手电筒"
+        );
+      }
+
+      function explainCameraError(error) {
+        const name = String(error?.name || "").toLowerCase();
+        if (name.includes("notallowed") || name.includes("permission")) {
+          return "相机权限被拒绝，请在浏览器设置里允许相机后重试。";
+        }
+        if (name.includes("notfound") || name.includes("overconstrained")) {
+          return "当前设备未检测到可用相机，请检查系统相机是否可用。";
+        }
+        if (name.includes("notreadable")) {
+          return "相机被其他应用占用，请关闭占用后重试。";
+        }
+        return "相机初始化失败，请点击“重新开启相机”再试。";
+      }
+
+      function stopCameraStream() {
+        cameraState.torchEnabled = false;
+        cameraState.torchSupported = false;
+        updateTorchUI();
+        if (cameraState.stream) {
+          cameraState.stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+          cameraState.stream = null;
+        }
+        cameraState.activeFacingMode = "";
+        if (cameraPreview) {
+          cameraPreview.srcObject = null;
+        }
+      }
+
+      async function requestCameraStream(preferEnvironment = true) {
+        if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
+          showCameraFallback("当前浏览器不支持网页相机拍摄，请使用上传。");
+          return false;
+        }
+
+        const cameraAttempts = preferEnvironment
+          ? [
+              { video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: true, audio: false }
+            ]
+          : [
+              { video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: true, audio: false }
+            ];
+
+        let lastError = null;
+        stopCameraStream();
+        hideCameraFallback();
+
+        for (const constraints of cameraAttempts) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            cameraState.stream = stream;
+            if (cameraPreview) {
+              cameraPreview.srcObject = stream;
+              try {
+                await cameraPreview.play();
+              } catch (playError) {}
+            }
+
+            const videoTrack = stream.getVideoTracks()[0];
+            const settings = videoTrack?.getSettings?.() || {};
+            cameraState.activeFacingMode = String(settings.facingMode || "");
+            const capabilities = videoTrack?.getCapabilities?.() || {};
+            cameraState.torchSupported = Boolean(capabilities && Object.prototype.hasOwnProperty.call(capabilities, "torch"));
+            cameraState.torchEnabled = false;
+            updateTorchUI();
+            if (cameraFeed) {
+              cameraFeed.classList.toggle("is-environment", cameraState.activeFacingMode === "environment");
+            }
+            hideCameraFallback();
+            return true;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        showCameraFallback(explainCameraError(lastError));
+        return false;
+      }
+
+      function ensureCameraStream(preferEnvironment = true) {
+        if (cameraState.openPromise) {
+          return cameraState.openPromise;
+        }
+
+        cameraState.openPromise = requestCameraStream(preferEnvironment).finally(() => {
+          cameraState.openPromise = null;
+        });
+        return cameraState.openPromise;
+      }
+
+      function captureFromPreview() {
+        const width = Number(cameraPreview?.videoWidth || 0);
+        const height = Number(cameraPreview?.videoHeight || 0);
+        if (!width || !height || !cameraCaptureCanvas) {
+          return "";
+        }
+
+        cameraCaptureCanvas.width = width;
+        cameraCaptureCanvas.height = height;
+        const ctx = cameraCaptureCanvas.getContext("2d", { alpha: false });
+        if (!ctx) return "";
+        ctx.drawImage(cameraPreview, 0, 0, width, height);
+        return cameraCaptureCanvas.toDataURL("image/jpeg", 0.92);
+      }
+
+      async function setTorchEnabled(enabled) {
+        const track = cameraState.stream?.getVideoTracks?.()[0];
+        if (!track || !cameraState.torchSupported) {
+          return false;
+        }
+
+        try {
+          await track.applyConstraints({
+            advanced: [{ torch: Boolean(enabled) }]
+          });
+          cameraState.torchEnabled = Boolean(enabled);
+          updateTorchUI();
+          return true;
+        } catch (error) {
+          showCameraFallback("当前设备不支持网页控制手电筒。");
+          cameraState.torchEnabled = false;
+          updateTorchUI();
+          return false;
         }
       }
 
@@ -954,14 +1197,24 @@
         event.target.value = "";
       });
 
-      shutterButton.addEventListener("click", () => {
-        const src = simulatedShots[state.nextSimulatedShotIndex % simulatedShots.length];
-        state.nextSimulatedShotIndex += 1;
+      shutterButton.addEventListener("click", async () => {
+        const hasStream = Boolean(cameraState.stream);
+        if (!hasStream) {
+          const opened = await ensureCameraStream(true);
+          if (!opened) return;
+        }
+
+        const capturedSrc = captureFromPreview();
+        if (!capturedSrc) {
+          showCameraFallback("相机还在初始化，请稍后再拍一张。");
+          return;
+        }
+
         addPhotos([
           {
-            id: "simulated-" + Date.now(),
-            src,
-            kind: "preset"
+            id: "capture-" + Date.now(),
+            src: capturedSrc,
+            kind: "capture"
           }
         ]);
       });
@@ -1008,8 +1261,39 @@
         }
       });
 
+      retryCameraButton?.addEventListener("click", () => {
+        ensureCameraStream(true);
+      });
+
+      flashToggleButton?.addEventListener("click", async () => {
+        if (!cameraState.stream) {
+          const opened = await ensureCameraStream(true);
+          if (!opened) return;
+        }
+
+        if (!cameraState.torchSupported) {
+          showCameraFallback("当前浏览器暂不支持网页手电筒控制。");
+          return;
+        }
+
+        await setTorchEnabled(!cameraState.torchEnabled);
+      });
+
       window.addEventListener("beforeunload", () => {
+        stopCameraStream();
         state.photos.forEach(revokePhoto);
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopCameraStream();
+        }
+      });
+
+      window.addEventListener("pageshow", () => {
+        if (!document.hidden) {
+          ensureCameraStream(true);
+        }
       });
 
       const closeButton = document.querySelector(".icon-button.ghost");
@@ -1017,6 +1301,7 @@
         closeButton.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
+          stopCameraStream();
 
           if (window.parent && window.parent !== window) {
             window.parent.postMessage({ type: "stage2-route", route: "nexus" }, "*");
@@ -1030,6 +1315,7 @@
       updateStackPreview();
       updateCounter();
       enableGallerySwipe(galleryCarousel);
+      ensureCameraStream(true);
     })();
   </script>
 </body>

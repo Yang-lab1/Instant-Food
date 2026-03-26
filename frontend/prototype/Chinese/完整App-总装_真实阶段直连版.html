@@ -59,7 +59,7 @@
 </head>
 <body>
   <div class="shell">
-    <iframe id="shellFrame" class="shell-frame" title="拍立食四阶段总装页面"></iframe>
+    <iframe id="shellFrame" class="shell-frame" title="拍立食四阶段总装页面" allow="camera *; microphone *; autoplay *"></iframe>
   </div>
 
   <script>
@@ -827,7 +827,20 @@
       }
 
       function buildStageSrcdoc(stage, subRoute = "") {
-        const shellMarkup = decodeUtf8Base64(stageMarkupB64[stage] || stageMarkupB64.stage1);
+        let shellMarkup = decodeUtf8Base64(stageMarkupB64[stage] || stageMarkupB64.stage1);
+        if (stage === "stage2") {
+          shellMarkup = shellMarkup
+            .replace(
+              /<iframe([^>]*\bid="stage2Frame"[^>]*)>/i,
+              (matched, attrs) => /allow=/i.test(matched)
+                ? matched
+                : `<iframe${attrs} allow="camera *; microphone *; autoplay *">`
+            )
+            .replace(
+              /const\s+routeFiles\s*=\s*\{\s*\}\s*;/,
+              'const routeFiles = { camera: "拍摄.html" };'
+            );
+        }
         const shellInitialHash = subRoute ? "#" + subRoute : "";
         const shellBaseHref = escapeHtmlAttr(document.baseURI.split("#")[0]);
         const shellBootstrapScript = [
@@ -1866,8 +1879,25 @@
           return;
         }
 
-        const profileSection = doc.querySelector("main section");
-        if (profileSection && !doc.querySelector(".shell-profile-background-image")) {
+        const nativeSettingsHero = doc.querySelector(".settings-hero");
+        const profileSection = nativeSettingsHero || doc.querySelector("main section");
+
+        // New settings layout already has native hero + avatar structure.
+        // Do not inject legacy fallback blocks on top of it.
+        if (nativeSettingsHero) {
+          const legacyNestedHero = nativeSettingsHero.querySelector(".shell-profile-background-trigger");
+          if (legacyNestedHero) {
+            legacyNestedHero.remove();
+          }
+          const avatarShell = nativeSettingsHero.querySelector(".settings-avatar-shell, .optical-ring, .w-36.h-36");
+          if (avatarShell) {
+            avatarShell.style.marginTop = "";
+            avatarShell.style.position = "";
+            avatarShell.style.zIndex = "";
+          }
+        }
+
+        if (!nativeSettingsHero && profileSection && !doc.querySelector(".shell-profile-background-image")) {
           const hero = doc.createElement("div");
           hero.className = "shell-profile-background-trigger";
           hero.dataset.shellProfileTrigger = "background";
@@ -1905,24 +1935,35 @@
           }
         }
 
-        const backgroundImage =
-          doc.querySelector(".shell-profile-background-image") ||
-          Array.from(doc.querySelectorAll("img")).find((img) => (img.alt || "").includes("\u80cc\u666f\u56fe"));
-        const avatarImage =
-          doc.querySelector('[data-shell-profile-trigger="avatar"]') ||
-          Array.from(doc.querySelectorAll("img")).find((img) => (img.alt || "").includes("\u5934\u50cf"));
-        const nameNode =
-          doc.querySelector('[data-shell-profile-trigger="name"]') ||
-          doc.querySelector("main h2");
-        const heroCard = backgroundImage?.parentElement || null;
+        const backgroundImage = nativeSettingsHero
+          ? nativeSettingsHero.querySelector(".settings-hero-cover")
+          : (
+            doc.querySelector(".shell-profile-background-image") ||
+            Array.from(doc.querySelectorAll("img")).find((img) => (img.alt || "").includes("\u80cc\u666f\u56fe"))
+          );
+        const avatarImage = nativeSettingsHero
+          ? nativeSettingsHero.querySelector(".settings-avatar")
+          : (
+            doc.querySelector('[data-shell-profile-trigger="avatar"]') ||
+            Array.from(doc.querySelectorAll("img")).find((img) => (img.alt || "").includes("\u5934\u50cf"))
+          );
+        const nameNode = nativeSettingsHero
+          ? nativeSettingsHero.querySelector(".settings-hero-profile h2")
+          : (
+            doc.querySelector('[data-shell-profile-trigger="name"]') ||
+            doc.querySelector("main h2")
+          );
+        const heroCard = nativeSettingsHero || backgroundImage?.parentElement || null;
 
         if (backgroundImage) {
           backgroundImage.src = readStage4ProfileImage("background");
-          backgroundImage.classList.add("shell-profile-background-image");
-          backgroundImage.removeAttribute("data-shell-profile-trigger");
-          backgroundImage.removeAttribute("role");
-          backgroundImage.removeAttribute("tabindex");
-          backgroundImage.style.pointerEvents = "none";
+          if (!nativeSettingsHero) {
+            backgroundImage.classList.add("shell-profile-background-image");
+            backgroundImage.removeAttribute("data-shell-profile-trigger");
+            backgroundImage.removeAttribute("role");
+            backgroundImage.removeAttribute("tabindex");
+            backgroundImage.style.pointerEvents = "none";
+          }
         }
 
         if (heroCard) {
@@ -3628,6 +3669,7 @@
         if (!innerFrame) {
           return;
         }
+        innerFrame.setAttribute("allow", "camera *; microphone *; autoplay *");
         const stage2Veil = doc.getElementById("stage2Veil");
 
         ensureInlineStyle(doc, "shell-stage2-switching-visual-guard", [
@@ -4247,6 +4289,14 @@
           const href = decodeURIComponent((element?.getAttribute("href") || "").trim());
           const hrefRoute = resolveShellRouteFromHref(element?.getAttribute("href") || "");
           if (hrefRoute) {
+            if (
+              state.currentSubRoute === "settings" &&
+              hrefRoute.stage === "stage2" &&
+              !hrefRoute.subRoute &&
+              isShellBackTrigger(element)
+            ) {
+              return { stage: "stage4", subRoute: "archive" };
+            }
             return hrefRoute;
           }
 
@@ -4255,6 +4305,13 @@
           }
 
           const text = readShellTriggerText(element);
+          if (
+            state.currentSubRoute === "settings" &&
+            (isShellBackTrigger(element) || href.includes("Nexus"))
+          ) {
+            return { stage: "stage4", subRoute: "archive" };
+          }
+
           if (href.includes("身份验证") || text.includes("退出登录")) {
             return { stage: "stage1", subRoute: "auth" };
           }
@@ -4386,6 +4443,10 @@
           sheetPrimary.addEventListener("click", () => {
             const titleText = (sheetTitle?.textContent || "").trim();
             if (titleText.includes("Nexus")) {
+              if (state.currentSubRoute === "settings") {
+                loadStage("stage4", { subRoute: "archive" });
+                return;
+              }
               loadStage("stage2");
               return;
             }
