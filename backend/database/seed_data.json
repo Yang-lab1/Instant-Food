@@ -1,0 +1,116 @@
+[
+  {
+    "title": "番茄炒蛋",
+    "title_zh": "番茄炒蛋",
+    "description": "经典家常菜，酸甜可口，操作简单",
+    "description_zh": "经典家常菜，酸甜可口，操作简单",
+    "cuisine_type": "中餐",
+    "meal_type": "午餐",
+    "difficulty": "easy",
+    "prep_time_minutes": 5,
+    "cook_time_minutes": 10,
+    "servings": 2,
+    "calories_per_serving": 180,
+    "source": "manual",
+    "is_published": true,
+    "ingredients": [
+      {"name": "番茄", "quantity": "2", "unit": "个", "notes": "切块"},
+      {"name": "鸡蛋", "quantity": "3", "unit": "个", "notes": "打散"},
+      {"name": "食用油", "quantity": "15", "unit": "ml"},
+      {"name": "盐", "quantity": "3", "unit": "g"},
+      {"name": "白糖", "quantity": "5", "unit": "g"},
+      {"name": "葱花", "quantity": "10", "unit": "g"}
+    ],
+    "steps": [
+      {"instruction": "番茄洗净切块", "duration_minutes": 2},
+      {"instruction": "鸡蛋打入碗中，加少许盐搅散", "duration_minutes": 1},
+      {"instruction": "锅中倒油烧热，倒入蛋液快速翻炒至凝固，盛出备用", "duration_minutes": 2},
+      {"instruction": "锅中再加少许油，放入番茄块翻炒出汁", "duration_minutes": 3},
+      {"instruction": "加入白糖、盐调味", "duration_minutes": 1},
+      {"instruction": "倒入炒好的鸡蛋翻炒均匀，撒上葱花即可", "duration_minutes": 2}
+    ],
+    "tips": "番茄要炒出汁水才好吃，可以加少许水帮助出汁",
+    "nutrition": {
+      "calories": 180,
+      "protein": 12,
+      "fat": 10,
+      "carbs": 8
+    }
+  },
+  {
+    "title": "麻婆豆腐",
+    "title_zh": "麻婆豆腐",
+    "description": "四川经典名菜，麻辣鲜香",
+    "description_zh": "四川经典名菜，麻辣鲜香",
+    "cuisine_type": "川菜",
+    "meal_type": "午餐",
+    "difficulty": "medium",
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 15,
+    "servings": 3,
+    "calories_per_serving": 220,
+    "source": "manual",
+    "is_published": true,
+    "ingredients": [
+      {"name": "嫩豆腐", "quantity": "400", "unit": "g", "notes": "切小块"},
+      {"name": "牛肉末", "quantity": "100", "unit": "g"},
+      {"name": "郫县豆瓣酱", "quantity": "30", "unit": "g"},
+      {"name": "花椒粉", "quantity": "3", "unit": "g"},
+      {"name": "蒜末", "quantity": "10", "unit": "g"},
+      {"name": "姜末", "quantity": "5", "unit": "g"},
+      {"name": "食用油", "quantity": "30", "unit": "ml"},
+      {"name": "生抽", "quantity": "10", "unit": "ml"},
+      {"name": "水淀粉", "quantity": "15", "unit": "ml"}
+    ],
+    "steps": [
+      {"instruction": "豆腐切小块，放入淡盐水中浸泡去豆腥", "duration_minutes": 3},
+      {"instruction": "锅中倒油，烧热后下入牛肉末翻炒至变色", "duration_minutes": 3},
+      {"instruction": "加入豆瓣酱、蒜末、姜末炒出红油", "duration_minutes": 2},
+      {"instruction": "加入适量清水或高汤", "duration_minutes": 1},
+      {"instruction": "放入豆腐块，轻轻推动，中火煮5分钟", "duration_minutes": 5},
+      {"instruction": "加生抽调味，淋入水淀粉勾芡", "duration_minutes": 2},
+      {"instruction": "出锅撒花椒粉和葱花", "duration_minutes": 1}
+    ],
+    "tips": "豆腐用盐水浸泡可以去豆腥味且不易碎",
+    "nutrition": {
+      "calories": 220,
+      "protein": 18,
+      "fat": 12,
+      "carbs": 6
+    }
+  },
+  {
+    "title": "蒜蓉西兰花",
+    "title_zh": "蒜蓉西兰花",
+    "description": "清淡健康的家常蔬菜",
+    "description_zh": "清淡健康的家常蔬菜",
+    "cuisine_type": "中餐",
+    "meal_type": "晚餐",
+    "difficulty": "easy",
+    "prep_time_minutes": 5,
+    "cook_time_minutes": 5,
+    "servings": 2,
+    "calories_per_serving": 85,
+    "source": "manual",
+    "is_published": true,
+    "ingredients": [
+      {"name": "西兰花", "quantity": "300", "unit": "g", "notes": "切小朵"},
+      {"name": "大蒜", "quantity": "10", "unit": "g", "notes": "切末"},
+      {"name": "食用油", "quantity": "10", "unit": "ml"},
+      {"name": "盐", "quantity": "2", "unit": "g"}
+    ],
+    "steps": [
+      {"instruction": "西兰花洗净切小朵，用淡盐水浸泡10分钟", "duration_minutes": 2},
+      {"instruction": "锅中烧水，加少许盐和油，放入西兰花焯水30秒捞出", "duration_minutes": 2},
+      {"instruction": "锅中倒油，爆香蒜末", "duration_minutes": 1},
+      {"instruction": "倒入西兰花快速翻炒，加盐调味即可", "duration_minutes": 2}
+    ],
+    "tips": "焯水时加盐和油可以保持西兰花翠绿",
+    "nutrition": {
+      "calories": 85,
+      "protein": 5,
+      "fat": 5,
+      "carbs": 6
+    }
+  }
+]
