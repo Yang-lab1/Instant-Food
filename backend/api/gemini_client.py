@@ -8,6 +8,7 @@ import time
 from typing import Optional, Dict, Any, List
 
 import google.generativeai as genai
+import httpx
 
 from config import settings
 
@@ -71,6 +72,26 @@ class RecipeGenerationResult:
             "steps": self.steps,
             "tips": self.tips,
             "nutrition": self.nutrition
+        }
+
+
+class ImageGenerationResult:
+    """图片生成结果"""
+    def __init__(
+        self,
+        image_base64: str,
+        mime_type: str = "image/png",
+        text: str = ""
+    ):
+        self.image_base64 = image_base64
+        self.mime_type = mime_type
+        self.text = text
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "image_base64": self.image_base64,
+            "mime_type": self.mime_type,
+            "text": self.text
         }
 
 
@@ -222,7 +243,8 @@ class GeminiClient:
         flavor_profile: str = "川菜",
         spice_level: int = 3,
         max_time: int = 30,
-        equipment: List[str] = None
+        equipment: List[str] = None,
+        prompt_override: Optional[str] = None
     ) -> RecipeGenerationResult:
         """
         根据食材生成食谱
@@ -246,7 +268,7 @@ class GeminiClient:
         
         start_time = time.time()
         
-        prompt = self.RECIPE_GENERATION_PROMPT_TEMPLATE.format(
+        prompt = prompt_override or self.RECIPE_GENERATION_PROMPT_TEMPLATE.format(
             ingredients_list=", ".join(ingredients),
             cooking_technique=cooking_technique,
             flavor_profile=flavor_profile,
@@ -307,6 +329,61 @@ class GeminiClient:
             tips=data.get("tips", ""),
             nutrition=data.get("nutrition", {})
         )
+
+    def generate_dish_image(self, prompt: str) -> ImageGenerationResult:
+        """调用 Gemini 图像生成模型（Nano Banana / gemini-2.5-flash-image）。"""
+        if not settings.has_gemini():
+            raise GeminiServiceError("Gemini API key not configured")
+
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{settings.image_model}:generateContent?key={settings.gemini_api_key}"
+        )
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": prompt
+                        }
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "responseModalities": ["TEXT", "IMAGE"]
+            }
+        }
+
+        try:
+            response = httpx.post(url, json=payload, timeout=90.0)
+            response.raise_for_status()
+            data = response.json()
+            return self._parse_image_generation_result(data)
+        except Exception as e:
+            logger.error(f"Gemini image generation failed: {e}")
+            raise GeminiServiceError(f"Image generation failed: {str(e)}")
+
+    def _parse_image_generation_result(self, data: Dict[str, Any]) -> ImageGenerationResult:
+        candidates = data.get("candidates", [])
+        for candidate in candidates:
+            content = candidate.get("content", {})
+            for part in content.get("parts", []):
+                inline_data = part.get("inlineData") or part.get("inline_data")
+                if inline_data:
+                    return ImageGenerationResult(
+                        image_base64=inline_data.get("data", ""),
+                        mime_type=inline_data.get("mimeType", "image/png"),
+                        text=next(
+                            (
+                                item.get("text", "")
+                                for item in content.get("parts", [])
+                                if item.get("text")
+                            ),
+                            "",
+                        ),
+                    )
+
+        raise GeminiServiceError("Image generation returned no image data")
 
 
 # 全局 Gemini 客户端实例

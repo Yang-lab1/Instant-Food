@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # AI 模型配置
     ai_model: str = "gemini-2.5-flash"
     vision_model: str = "gemini-2.5-flash"
+    image_model: str = "gemini-2.5-flash-image"
     max_tokens: int = 4096
     temperature: float = 0.7
     

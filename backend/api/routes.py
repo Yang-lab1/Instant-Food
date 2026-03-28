@@ -14,6 +14,7 @@ from sqlalchemy import text
 
 from database.supabase_client import get_supabase, get_supabase_admin
 from api.ai_client import get_ai_client, AIServiceError
+from config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,14 @@ class RecipeGenerateRequest(BaseModel):
 class ImageRecognizeRequest(BaseModel):
     image_url: Optional[str] = None
     image_base64: Optional[str] = None
+
+
+class DishImageGenerateRequest(BaseModel):
+    prompt: Optional[str] = None
+    recipe_title: Optional[str] = None
+    recipe_description: Optional[str] = None
+    ingredients: List[str] = []
+    generation_log_id: Optional[str] = None
 
 
 class UserPreferencesRequest(BaseModel):
@@ -70,6 +79,7 @@ class RecipeCreateRequest(BaseModel):
     steps: List[dict] = []
     is_published: bool = False
     source: str = "manual"
+    generation_log_id: Optional[str] = None
 
 
 # ============================================
@@ -77,6 +87,259 @@ class RecipeCreateRequest(BaseModel):
 # ============================================
 
 router = APIRouter()
+
+
+def upload_generated_image_to_storage(image_base64: str, mime_type: str, prefix: str = "generated") -> str:
+    """把生成图片上传到 Supabase Storage，并返回公开 URL。"""
+    if not settings.use_supabase_storage:
+        raise ValueError("Supabase Storage is disabled")
+
+    extension_map = {
+        "image/png": "png",
+        "image/jpeg": "jpg",
+        "image/webp": "webp",
+    }
+    extension = extension_map.get(mime_type, "png")
+    image_bytes = base64.b64decode(image_base64)
+    object_path = (
+        f"{prefix}/"
+        f"{datetime.utcnow().strftime('%Y/%m/%d')}/"
+        f"{uuid.uuid4().hex}.{extension}"
+    )
+
+    supabase = get_supabase_admin()
+    supabase.storage.from_(settings.storage_bucket).upload(
+        object_path,
+        image_bytes,
+        {"content-type": mime_type, "upsert": "true"},
+    )
+    return supabase.storage.from_(settings.storage_bucket).get_public_url(object_path)
+
+
+def build_ingredient_atlas(recognition_result, recipe_result):
+    atlas = []
+    recognition_map = {
+        item.get("name"): item for item in (recognition_result.ingredients or [])
+    }
+
+    for index, ingredient in enumerate(recipe_result.ingredients or []):
+        name = ingredient.get("name") or f"食材 {index + 1}"
+        recognized = recognition_map.get(name, {})
+        quantity = ingredient.get("quantity") or ingredient.get("estimated_quantity") or "适量"
+        unit = ingredient.get("unit") or ""
+        atlas.append({
+            "name": name,
+            "amount": f"{quantity}{unit}".strip() or "适量",
+            "role": infer_ingredient_role(name, index),
+            "action": infer_ingredient_action(name),
+            "intro": ingredient.get("notes") or build_ingredient_intro(name, recognized),
+            "confidence": recognized.get("confidence")
+        })
+
+    return atlas
+
+
+def build_teaching_steps(recipe_result):
+    teaching_steps = []
+    for index, step in enumerate(recipe_result.steps or []):
+        instruction = step.get("instruction", "")
+        teaching_steps.append({
+            "step_no": index + 1,
+            "title": infer_step_title(instruction, index),
+            "instruction": instruction,
+            "duration": (
+                f"{step.get('duration_minutes')} 分钟"
+                if step.get("duration_minutes")
+                else "按状态灵活调整"
+            ),
+            "tip": step.get("tips") or infer_step_tip(instruction, index)
+        })
+    return teaching_steps
+
+
+def build_teaching_summary(recognition_result, recipe_result):
+    total_minutes = sum(
+        int(step.get("duration_minutes") or 0)
+        for step in (recipe_result.steps or [])
+    )
+    ingredient_count = len(recognition_result.ingredients or [])
+    step_count = len(recipe_result.steps or [])
+
+    return [
+        {
+            "label": "原材料",
+            "value": f"{ingredient_count} 项已识别" if ingredient_count else "待补充识别"
+        },
+        {
+            "label": "节奏",
+            "value": f"{step_count} 步完成一餐" if step_count else "等待步骤生成"
+        },
+        {
+            "label": "时长",
+            "value": f"约 {total_minutes} 分钟" if total_minutes > 0 else "按现场火候判断"
+        }
+    ]
+
+
+def build_teaching_text(recognition_result, recipe_result):
+    ingredient_names = "、".join(
+        item.get("name", "")
+        for item in (recognition_result.ingredients or [])
+        if item.get("name")
+    )
+    step_count = len(recipe_result.steps or [])
+    tips = recipe_result.tips or "建议先备好食材，再按步骤逐步完成。"
+    return (
+        f"本次识别到的主要原材料有：{ingredient_names or '待补充'}。"
+        f"系统共生成 {step_count} 个操作步骤，并整理了食材图谱和教学提示。"
+        f"{tips}"
+    )
+
+
+def build_generated_image_urls(request):
+    if request.image_url:
+        return [request.image_url]
+    return []
+
+
+def build_generation_status_payload(request, recognition_result, recipe_result, ai):
+    return {
+        "input_image_url": request.image_url,
+        "input_image_base64": request.image_base64,
+        "recognized_ingredients": [
+            item.get("name")
+            for item in (recognition_result.ingredients or [])
+            if item.get("name")
+        ],
+        "generated_recipe": recipe_result.to_dict(),
+        "ai_model_used": ai.model_name,
+        "generated_image_url": request.image_url,
+        "generated_image_urls": build_generated_image_urls(request),
+        "generated_image_prompt": f"根据上传原材料图片生成菜谱《{recipe_result.title_zh or recipe_result.title}》",
+        "ingredient_atlas": build_ingredient_atlas(recognition_result, recipe_result),
+        "teaching_steps": build_teaching_steps(recipe_result),
+        "teaching_summary": build_teaching_summary(recognition_result, recipe_result),
+        "teaching_text": build_teaching_text(recognition_result, recipe_result),
+        "generation_type": "image_to_recipe",
+        "generation_status": "completed",
+        "quality_rating": None,
+        "created_at": datetime.utcnow().isoformat()
+    }
+
+
+def build_text_generation_status_payload(request, recipe_result, ai):
+    flow_text = " ".join(
+        step.get("instruction", "").strip()
+        for step in (recipe_result.steps or [])
+        if step.get("instruction")
+    ).strip()
+
+    ingredient_atlas = []
+    for index, name in enumerate(request.ingredients):
+        ingredient_atlas.append({
+            "name": name,
+            "amount": "按输入数量",
+            "role": infer_ingredient_role(name, index),
+            "action": infer_ingredient_action(name),
+            "intro": f"{name}已纳入本次纯文字生成，可按家庭烹饪习惯提前处理。"
+        })
+
+    return {
+        "recognized_ingredients": request.ingredients,
+        "user_preferences": {
+            "cooking_technique": request.cooking_technique,
+            "flavor_profile": request.flavor_profile,
+            "spice_level": request.spice_level,
+            "max_time": request.max_time,
+            "equipment": request.equipment or [],
+        },
+        "generated_recipe": recipe_result.to_dict(),
+        "ai_model_used": ai.model_name,
+        "ingredient_atlas": ingredient_atlas,
+        "teaching_steps": build_teaching_steps(recipe_result),
+        "teaching_summary": [
+            {
+                "label": "原材料",
+                "value": f"{len(request.ingredients)} 项输入食材"
+            },
+            {
+                "label": "节奏",
+                "value": f"{len(recipe_result.steps or [])} 步完成一餐"
+            },
+            {
+                "label": "方式",
+                "value": f"{request.cooking_technique} / {request.flavor_profile}"
+            }
+        ],
+        "teaching_text": flow_text or "未从训练库中提取到可用流程说明。",
+        "generation_type": "text_to_recipe",
+        "generation_status": "completed",
+        "quality_rating": None,
+        "created_at": datetime.utcnow().isoformat()
+    }
+
+
+def build_ingredient_intro(name, recognized):
+    nutrition_notes = recognized.get("estimated_quantity")
+    if nutrition_notes:
+        return f"{name}在这道菜里建议准备 {nutrition_notes}，下锅前先清洗并处理好。"
+    return f"{name}适合提前洗净、切好，正式烹饪时更容易控制节奏。"
+
+
+def infer_ingredient_role(name, index):
+    text_value = name or ""
+    if any(token in text_value for token in ["葱", "姜", "蒜", "椒", "香菜"]):
+        return "提香点睛"
+    if any(token in text_value for token in ["盐", "糖", "酱", "醋", "油", "料酒", "蚝油", "生抽", "老抽"]):
+        return "调味关键"
+    if any(token in text_value for token in ["蛋", "肉", "鸡", "虾", "鱼", "豆腐"]):
+        return "主体蛋白"
+    if any(token in text_value for token in ["番茄", "土豆", "青椒", "洋葱", "菌", "白菜", "生菜", "黄瓜"]):
+        return "主蔬菜"
+    return "核心主料" if index == 0 else "辅助配料"
+
+
+def infer_ingredient_action(name):
+    text_value = name or ""
+    if any(token in text_value for token in ["葱", "姜", "蒜", "椒", "洋葱"]):
+        return "建议切碎爆香"
+    if any(token in text_value for token in ["肉", "鸡", "虾", "鱼"]):
+        return "建议提前腌制"
+    if "蛋" in text_value:
+        return "建议先打散"
+    if any(token in text_value for token in ["番茄", "土豆", "黄瓜", "白菜", "豆腐"]):
+        return "建议切块备用"
+    return "建议洗净备料"
+
+
+def infer_step_title(instruction, index):
+    if any(token in instruction for token in ["洗", "切", "备", "腌"]):
+        return "备料阶段"
+    if any(token in instruction for token in ["热锅", "下油", "爆香"]):
+        return "起锅增香"
+    if any(token in instruction for token in ["翻炒", "炒"]):
+        return "主火翻炒"
+    if any(token in instruction for token in ["煮", "焖", "炖"]):
+        return "加热收味"
+    if any(token in instruction for token in ["装盘", "出锅"]):
+        return "完成装盘"
+    return f"步骤 {index + 1}"
+
+
+def infer_step_tip(instruction, index):
+    if any(token in instruction for token in ["洗", "切", "备", "腌"]):
+        return "先把全部原材料准备好，正式开火时会更顺手。"
+    if any(token in instruction for token in ["热锅", "下油", "爆香"]):
+        return "锅热后再下油和香料，更容易把香气带出来。"
+    if any(token in instruction for token in ["翻炒", "炒"]):
+        return "保持中大火快速翻动，避免局部受热过度。"
+    if any(token in instruction for token in ["煮", "焖", "炖"]):
+        return "这一步更看重火候和汤汁变化，建议边看边调。"
+    if any(token in instruction for token in ["装盘", "出锅"]):
+        return "临出锅前试一下味道，再决定是否补调味。"
+    if index == 0:
+        return "先完成准备动作，后续每一步都会更从容。"
+    return "跟着步骤观察状态变化，再决定下一步。"
 
 
 # 健康检查
@@ -136,22 +399,26 @@ async def generate_from_image(request: ImageRecognizeRequest):
         )
         
         # 记录到数据库
+        generation_log_id = None
         try:
             supabase = get_supabase_admin()
-            supabase.table("generation_logs").insert({
-                "recognized_ingredients": ingredient_names,
-                "generated_recipe": recipe_result.to_dict(),
-                "ai_model_used": ai.model_name,
-                "quality_rating": None,
-                "created_at": datetime.utcnow().isoformat()
-            }).execute()
+            log_payload = build_generation_status_payload(
+                request=request,
+                recognition_result=recognition_result,
+                recipe_result=recipe_result,
+                ai=ai
+            )
+            log_response = supabase.table("generation_logs").insert(log_payload).execute()
+            if log_response.data:
+                generation_log_id = log_response.data[0].get("id")
         except Exception as e:
             logger.warning(f"Failed to log generation: {e}")
         
         return {
             "success": True,
             "recognition": recognition_result.to_dict(),
-            "recipe": recipe_result.to_dict()
+            "recipe": recipe_result.to_dict(),
+            "generation_log_id": generation_log_id
         }
         
     except AIServiceError as e:
@@ -177,12 +444,78 @@ async def generate_recipe(request: RecipeGenerateRequest):
             max_time=request.max_time,
             equipment=request.equipment
         )
+
+        generation_log_id = None
+        try:
+            supabase = get_supabase_admin()
+            log_payload = build_text_generation_status_payload(
+                request=request,
+                recipe_result=recipe_result,
+                ai=ai
+            )
+            log_response = supabase.table("generation_logs").insert(log_payload).execute()
+            if log_response.data:
+                generation_log_id = log_response.data[0].get("id")
+        except Exception as e:
+            logger.warning(f"Failed to log text generation: {e}")
         
         return {
             "success": True,
-            "recipe": recipe_result.to_dict()
+            "recipe": recipe_result.to_dict(),
+            "generation_log_id": generation_log_id
         }
         
+    except AIServiceError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/generate/image")
+async def generate_dish_image(request: DishImageGenerateRequest):
+    """使用 Gemini 图像模型为已生成菜谱创建示意图。"""
+    ai = get_ai_client()
+
+    if not ai.is_available:
+        raise HTTPException(status_code=503, detail="AI service not available")
+
+    prompt = request.prompt or (
+        f"请生成一道成品菜图片，菜名是 {request.recipe_title or '家常菜'}。"
+        f"描述：{request.recipe_description or '中国家庭厨房风格，摆盘自然，食物真实可口。'}"
+        f"主要食材：{', '.join(request.ingredients or [])}。"
+        "风格要求：真实食物摄影、暖色灯光、中式家常摆盘、高清细节。"
+    )
+
+    try:
+        image_result = ai.generate_dish_image(prompt)
+        public_image_url = None
+
+        try:
+            public_image_url = upload_generated_image_to_storage(
+                image_result.image_base64,
+                image_result.mime_type,
+                prefix="generated-dishes"
+            )
+        except Exception as e:
+            logger.warning(f"Failed to upload generated image to storage: {e}")
+
+        if request.generation_log_id:
+            try:
+                supabase = get_supabase_admin()
+                supabase.table("generation_logs").update({
+                    "generated_image_prompt": prompt,
+                    "generated_image_url": public_image_url,
+                    "generated_image_urls": [public_image_url] if public_image_url else [],
+                    "generation_status": "completed"
+                }).eq("id", request.generation_log_id).execute()
+            except Exception as e:
+                logger.warning(f"Failed to update generation log image prompt: {e}")
+
+        return {
+            "success": True,
+            "image": image_result.to_dict(),
+            "image_url": public_image_url,
+            "provider": ai.provider_name,
+            "model": settings.image_model
+        }
     except AIServiceError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -273,15 +606,45 @@ async def create_recipe(request: RecipeCreateRequest):
                 "duration_minutes": step.get("duration_minutes"),
                 "tips": step.get("tips")
             }).execute()
+
+        if request.generation_log_id:
+            supabase.table("generation_logs").update({
+                "recipe_id": recipe["id"]
+            }).eq("id", request.generation_log_id).execute()
         
         return {
             "success": True,
             "recipe": recipe
         }
-        
     except Exception as e:
         logger.error(f"Create recipe failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/generation-logs/{log_id}")
+async def get_generation_log(log_id: str):
+    """获取单条生成日志，用于结果页回显。"""
+    try:
+        supabase = get_supabase_admin()
+        response = (
+            supabase.table("generation_logs")
+            .select("*")
+            .eq("id", log_id)
+            .limit(1)
+            .execute()
+        )
+        log_item = response.data[0] if response.data else None
+        if not log_item:
+            raise HTTPException(status_code=404, detail="Generation log not found")
+        return {
+            "success": True,
+            "log": log_item
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get generation log failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Get generation log failed: {str(e)}")
 
 
 @router.get("/recipes")

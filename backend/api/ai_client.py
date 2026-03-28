@@ -1,18 +1,13 @@
 """
 拍立食 - AI 服务客户端
-统一 AI 服务入口，优先支持 OpenAI / Gemini
+仅从 ai_training_data 数据库提取食谱信息
 """
-import base64
-import json
+from collections import Counter
 import logging
 import time
 from typing import Optional, Dict, Any, List
 
-from openai import OpenAI
-import anthropic
-
-from config import settings
-from api.gemini_client import get_gemini_client, GeminiServiceError
+from database.supabase_client import get_supabase_admin
 
 logger = logging.getLogger(__name__)
 
@@ -20,29 +15,6 @@ logger = logging.getLogger(__name__)
 class AIServiceError(Exception):
     """AI 服务错误"""
     pass
-
-
-class ImageRecognitionResult:
-    """图片识别结果"""
-    def __init__(
-        self,
-        ingredients: List[Dict[str, Any]],
-        cooking_method: str,
-        nutrition_notes: str,
-        allergen_warning: List[str]
-    ):
-        self.ingredients = ingredients
-        self.cooking_method = cooking_method
-        self.nutrition_notes = nutrition_notes
-        self.allergen_warning = allergen_warning
-    
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "ingredients": self.ingredients,
-            "cooking_method": self.cooking_method,
-            "nutrition_notes": self.nutrition_notes,
-            "allergen_warning": self.allergen_warning
-        }
 
 
 class RecipeGenerationResult:
@@ -77,211 +49,69 @@ class RecipeGenerationResult:
         }
 
 
+
 class AIClient:
-    """统一 AI 服务客户端"""
-    
-    # 图片识别 Prompt
-    IMAGE_RECOGNITION_PROMPT = """请分析这张食物图片，识别出主要的食材成分。
-
-请以JSON格式输出，包含以下字段：
-- ingredients: 食材列表，每项包含 name(食材名), estimated_quantity(估计用量), confidence(置信度 0-1)
-- cooking_method: 烹饪方式（如炒、煮、蒸、烤、炸、生食等）
-- nutrition_notes: 营养特点简述
-- allergen_warning: 可能存在的过敏原列表（如牛奶、鸡蛋、小麦、甲壳类等）
-
-只输出JSON，不要有其他文字。"""
-    
-    # 食谱生成 Prompt 模板
-    RECIPE_GENERATION_PROMPT_TEMPLATE = """你是一位专业的中餐厨师，擅长根据用户提供的食材创作美味的食谱。
-
-食材: {ingredients_list}
-用户偏好:
-- 烹饪技法: {cooking_technique}
-- 风味档案: {flavor_profile}
-- 辣度: {spice_level}/5
-- 时间限制: {max_time}分钟
-- 可用厨具: {equipment}
-
-要求:
-1. 食谱要有创意但实用，适合中国家庭厨房
-2. 步骤清晰易操作
-3. 包含营养信息和过敏原提醒
-4. 考虑用户的口味偏好和可用设备
-
-请以JSON格式输出:
-{{
-  "title": "食谱英文名",
-  "title_zh": "食谱中文名",
-  "description": "简介",
-  "ingredients": [
-    {{"name": "食材名", "quantity": "用量", "unit": "单位", "notes": "处理备注"}}
-  ],
-  "steps": [
-    {{"instruction": "步骤描述", "duration_minutes": 分钟数, "tips": "小贴士"}}
-  ],
-  "tips": "整体小贴士",
-  "nutrition": {{
-    "calories_per_serving": 总卡路里,
-    "protein_g": 蛋白质克数,
-    "fat_g": 脂肪克数,
-    "carbs_g": 碳水克数
-  }},
-  "allergen_warning": ["过敏原提醒"],
-  "health_tips": ["健康建议"]
-}}
-
-只输出JSON，不要有其他文字。"""
+    """统一 AI 服务客户端 - 仅从 ai_training_data 数据库提取食谱"""
     
     def __init__(self):
-        self._openai_client: Optional[OpenAI] = None
-        self._anthropic_client: Optional[anthropic.Anthropic] = None
-        self._gemini_client = get_gemini_client()
-        
-        if settings.has_openai():
-            self._openai_client = OpenAI(api_key=settings.openai_api_key)
-            logger.info(f"OpenAI client initialized with model: {settings.ai_model}")
-        
-        if settings.has_anthropic():
-            self._anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-            logger.info("Anthropic client initialized")
-    
-    @property
-    def is_available(self) -> bool:
-        """检查 AI 服务是否可用"""
-        return (
-            self._openai_client is not None
-            or self._anthropic_client is not None
-            or self._gemini_client.is_available
-        )
+        self._training_rows_cache: List[Dict[str, Any]] = []
 
-    @property
-    def provider_name(self) -> str:
-        """当前可用的 AI 提供商。"""
-        if self._openai_client is not None:
-            return "openai"
-        if self._gemini_client.is_available:
-            return "gemini"
-        if self._anthropic_client is not None:
-            return "anthropic"
-        return "none"
-
-    @property
-    def model_name(self) -> Optional[str]:
-        """当前启用的模型名称。"""
-        if self.provider_name == "none":
-            return None
-        return settings.ai_model
-    
-    def recognize_image(self, image_data: bytes, image_type: str = "image/jpeg") -> ImageRecognitionResult:
-        """
-        识别图片中的食材
-        
-        Args:
-            image_data: 图片二进制数据
-            image_type: MIME 类型
-        
-        Returns:
-            ImageRecognitionResult: 识别结果
-        """
-        if self._openai_client is None and self._gemini_client.is_available:
+    def _load_training_rows(self) -> List[Dict[str, Any]]:
+        """带重试地读取 ai_training_data，并缓存最近一次成功结果。"""
+        last_error: Optional[Exception] = None
+        for attempt in range(3):
             try:
-                result = self._gemini_client.recognize_image(image_data, image_type)
-                return ImageRecognitionResult(
-                    ingredients=result.ingredients,
-                    cooking_method=result.cooking_method,
-                    nutrition_notes=result.nutrition_notes,
-                    allergen_warning=result.allergen_warning,
+                supabase = get_supabase_admin()
+                response = (
+                    supabase.table("ai_training_data")
+                    .select("input_description,expected_output,quality_score")
+                    .order("quality_score", desc=True)
+                    .limit(120)
+                    .execute()
                 )
-            except GeminiServiceError as e:
-                raise AIServiceError(str(e))
+                rows = response.data or []
+                if rows:
+                    self._training_rows_cache = rows
+                return rows
+            except Exception as exc:
+                last_error = exc
+                time.sleep(0.25 * (attempt + 1))
 
-        if not settings.has_openai():
-            raise AIServiceError("OpenAI API key not configured")
-        
-        start_time = time.time()
-        
-        # 将图片转换为 base64
-        base64_image = base64.b64encode(image_data).decode('utf-8')
-        
-        try:
-            response = self._openai_client.chat.completions.create(
-                model=settings.vision_model,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": self.IMAGE_RECOGNITION_PROMPT},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:{image_type};base64,{base64_image}"
-                                }
-                            }
-                        ]
-                    }
-                ],
-                max_tokens=settings.max_tokens,
-                temperature=settings.temperature
+        if self._training_rows_cache:
+            logger.warning(
+                "Failed to load AI training examples from Supabase, using cached rows instead: %s",
+                last_error,
             )
-            
-            elapsed_ms = int((time.time() - start_time) * 1000)
-            logger.info(f"Image recognition completed in {elapsed_ms}ms")
-            
-            content = response.choices[0].message.content
-            return self._parse_image_result(content)
-            
-        except Exception as e:
-            logger.error(f"Image recognition failed: {e}")
-            raise AIServiceError(f"Image recognition failed: {str(e)}")
-    
-    def recognize_image_from_url(self, image_url: str) -> ImageRecognitionResult:
-        """从 URL 识别图片"""
-        if self._openai_client is None and self._gemini_client.is_available:
-            try:
-                result = self._gemini_client.recognize_image_from_url(image_url)
-                return ImageRecognitionResult(
-                    ingredients=result.ingredients,
-                    cooking_method=result.cooking_method,
-                    nutrition_notes=result.nutrition_notes,
-                    allergen_warning=result.allergen_warning,
-                )
-            except GeminiServiceError as e:
-                raise AIServiceError(str(e))
+            return self._training_rows_cache
 
-        if not settings.has_openai():
-            raise AIServiceError("OpenAI API key not configured")
-        
-        start_time = time.time()
-        
-        try:
-            response = self._openai_client.chat.completions.create(
-                model=settings.vision_model,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": self.IMAGE_RECOGNITION_PROMPT},
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": image_url}
-                            }
-                        ]
-                    }
-                ],
-                max_tokens=settings.max_tokens,
-                temperature=settings.temperature
+        logger.warning(f"Failed to load AI training examples: {last_error}")
+        return []
+
+    def _fetch_training_examples(self, ingredients: List[str], limit: int = 1) -> List[Dict[str, Any]]:
+        """从 ai_training_data 中挑选与当前输入最相关的样本。"""
+        rows = self._load_training_rows()
+        if not rows:
+            return []
+
+        lowered_ingredients = [item.lower() for item in ingredients if item]
+        scored = []
+        for row in rows:
+            input_description = (row.get("input_description") or "").lower()
+            expected_output = (row.get("expected_output") or "").lower()
+            score = sum(
+                1 for ingredient in lowered_ingredients
+                if ingredient in input_description or ingredient in expected_output
             )
-            
-            elapsed_ms = int((time.time() - start_time) * 1000)
-            logger.info(f"Image recognition from URL completed in {elapsed_ms}ms")
-            
-            content = response.choices[0].message.content
-            return self._parse_image_result(content)
-            
-        except Exception as e:
-            logger.error(f"Image recognition from URL failed: {e}")
-            raise AIServiceError(f"Image recognition failed: {str(e)}")
-    
+            score += float(row.get("quality_score") or 0)
+            scored.append((score, row))
+
+        scored.sort(key=lambda item: item[0], reverse=True)
+        matched_rows = [row for score, row in scored if score > 0][:limit]
+        if matched_rows:
+            return matched_rows
+
+        return rows[:1]
+
     def generate_recipe(
         self,
         ingredients: List[str],
@@ -292,118 +122,86 @@ class AIClient:
         equipment: List[str] = None
     ) -> RecipeGenerationResult:
         """
-        根据食材生成食谱
+        根据食材从数据库生成食谱
         
         Args:
             ingredients: 食材列表
-            cooking_technique: 烹饪技法
-            flavor_profile: 风味档案
-            spice_level: 辣度 1-5
-            max_time: 最大时间（分钟）
-            equipment: 可用厨具
+            cooking_technique: 烹饪技法（参考用，主要从数据库提取）
+            flavor_profile: 风味档案（参考用，主要从数据库提取）
+            spice_level: 辣度 1-5（参考用，主要从数据库提取）
+            max_time: 最大时间（参考用，主要从数据库提取）
+            equipment: 可用厨具（参考用，主要从数据库提取）
         
         Returns:
             RecipeGenerationResult: 生成的食谱
         """
-        if self._openai_client is None and self._gemini_client.is_available:
-            try:
-                result = self._gemini_client.generate_recipe(
-                    ingredients=ingredients,
-                    cooking_technique=cooking_technique,
-                    flavor_profile=flavor_profile,
-                    spice_level=spice_level,
-                    max_time=max_time,
-                    equipment=equipment,
-                )
-                return RecipeGenerationResult(
-                    title=result.title,
-                    title_zh=result.title_zh,
-                    description=result.description,
-                    ingredients=result.ingredients,
-                    steps=result.steps,
-                    tips=result.tips,
-                    nutrition=result.nutrition,
-                )
-            except GeminiServiceError as e:
-                raise AIServiceError(str(e))
-
-        if not settings.has_openai():
-            raise AIServiceError("OpenAI API key not configured")
-        
-        if equipment is None:
-            equipment = ["炒锅", "砧板", "菜刀"]
-        
-        start_time = time.time()
-        
-        prompt = self.RECIPE_GENERATION_PROMPT_TEMPLATE.format(
-            ingredients_list=", ".join(ingredients),
+        return self._build_recipe_from_training_data(
+            ingredients=ingredients,
             cooking_technique=cooking_technique,
             flavor_profile=flavor_profile,
             spice_level=spice_level,
             max_time=max_time,
-            equipment=", ".join(equipment)
         )
-        
-        try:
-            response = self._openai_client.chat.completions.create(
-                model=settings.ai_model,
-                messages=[
-                    {"role": "system", "content": "你是一位专业的中餐厨师。"},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=settings.max_tokens,
-                temperature=settings.temperature
+
+    def _build_recipe_from_training_data(
+        self,
+        ingredients: List[str],
+        cooking_technique: str,
+        flavor_profile: str,
+        spice_level: int,
+        max_time: int,
+    ) -> RecipeGenerationResult:
+        """仅根据 ai_training_data.input_description 组织文字结果。"""
+        training_examples = self._fetch_training_examples(ingredients)
+        counts = Counter([item.strip() for item in ingredients if item.strip()])
+        ingredient_items = []
+
+        quantity_map = {
+            "鸡蛋": "个",
+            "番茄": "个",
+            "西红柿": "个",
+            "葱": "根",
+        }
+
+        for name, count in counts.items():
+            unit = quantity_map.get(name, "份")
+            ingredient_items.append(
+                {
+                    "name": name,
+                    "quantity": str(count),
+                    "unit": unit,
+                    "notes": infer_training_note(name),
+                }
             )
-            
-            elapsed_ms = int((time.time() - start_time) * 1000)
-            logger.info(f"Recipe generation completed in {elapsed_ms}ms")
-            
-            content = response.choices[0].message.content
-            return self._parse_recipe_result(content)
-            
-        except Exception as e:
-            logger.error(f"Recipe generation failed: {e}")
-            raise AIServiceError(f"Recipe generation failed: {str(e)}")
-    
-    def _parse_image_result(self, content: str) -> ImageRecognitionResult:
-        """解析图片识别结果"""
-        # 提取 JSON
-        json_str = content
-        if "```json" in content:
-            json_str = content.split("```json")[1].split("```")[0]
-        elif "```" in content:
-            json_str = content.split("```")[1].split("```")[0]
-        
-        json_str = json_str.strip()
-        data = json.loads(json_str)
-        
-        return ImageRecognitionResult(
-            ingredients=data.get("ingredients", []),
-            cooking_method=data.get("cooking_method", "未知"),
-            nutrition_notes=data.get("nutrition_notes", ""),
-            allergen_warning=data.get("allergen_warning", [])
+
+        top_example = training_examples[0] if training_examples else None
+        input_description = top_example.get("input_description") if top_example else ""
+
+        title_zh = build_fallback_title(
+            list(counts.keys()),
+            cooking_technique,
+            top_example=top_example,
         )
-    
-    def _parse_recipe_result(self, content: str) -> RecipeGenerationResult:
-        """解析食谱生成结果"""
-        # 提取 JSON
-        json_str = content
-        if "```json" in content:
-            json_str = content.split("```json")[1].split("```")[0]
-        elif "```" in content:
-            json_str = content.split("```")[1].split("```")[0]
-        
-        json_str = json_str.strip()
-        data = json.loads(json_str)
-        
+        description = extract_description_from_training(input_description) or (
+            f"基于训练库检索结果整理出的{flavor_profile}风味做法，主要食材为 {'、'.join(counts.keys())}。"
+        )
+        steps = build_fallback_steps(
+            list(counts.keys()),
+            cooking_technique,
+            spice_level,
+            input_description=input_description,
+        )
+        nutrition = estimate_fallback_nutrition(counts)
+        tips = build_training_tips(input_description, ingredients, max_time)
+
         return RecipeGenerationResult(
-            title=data.get("title", ""),
-            title_zh=data.get("title_zh", data.get("title", "")),
-            description=data.get("description", ""),
-            ingredients=data.get("ingredients", []),
-            steps=data.get("steps", []),
-            tips=data.get("tips", ""),
-            nutrition=data.get("nutrition", {})
+            title=title_zh,
+            title_zh=title_zh,
+            description=description,
+            ingredients=ingredient_items,
+            steps=steps,
+            tips=tips,
+            nutrition=nutrition,
         )
 
 
@@ -414,3 +212,114 @@ ai_client = AIClient()
 def get_ai_client() -> AIClient:
     """获取 AI 客户端"""
     return ai_client
+
+
+def build_fallback_title(
+    ingredients: List[str],
+    cooking_technique: str,
+    top_example: Optional[Dict[str, Any]] = None,
+) -> str:
+    if top_example and top_example.get("expected_output"):
+        return top_example["expected_output"]
+    lead = "".join(ingredients[:2]) if ingredients else "家常料理"
+    return f"{lead}{cooking_technique}"
+
+
+def infer_training_note(name: str) -> str:
+    """从训练数据推断食材处理建议"""
+    if name in {"鸡蛋", "鸭蛋", "鹌鹑蛋"}:
+        return "建议打散或单独处理后再合入主菜。"
+    if name in {"番茄", "西红柿"}:
+        return "适合先切块，烹饪时可利用其自然出汁。"
+    if name in {"葱", "姜", "蒜"}:
+        return "通常用于提香，建议切小备用。"
+    return "根据训练库相近做法，建议先洗净并按菜式切配。"
+
+
+def extract_description_from_training(input_description: str) -> str:
+    text = input_description or ""
+    marker = "简介："
+    if marker in text:
+        tail = text.split(marker, 1)[1]
+        for stop in ["步骤：", "关键词："]:
+            if stop in tail:
+                tail = tail.split(stop, 1)[0]
+        return tail.strip(" ，。")
+    return ""
+
+
+def extract_steps_text_from_description(input_description: str) -> str:
+    text = input_description or ""
+    marker = "步骤："
+    if marker in text:
+        tail = text.split(marker, 1)[1]
+        if "关键词：" in tail:
+            tail = tail.split("关键词：", 1)[0]
+        return tail.strip(" ，。")
+    return ""
+
+
+def build_fallback_steps(
+    ingredients: List[str],
+    cooking_technique: str,
+    spice_level: int,
+    input_description: str = "",
+) -> List[Dict[str, Any]]:
+    """从训练数据获取烹饪步骤"""
+    generated_from_training = build_steps_from_training_description(input_description)
+    if generated_from_training:
+        return generated_from_training
+    return [
+        {
+            "instruction": build_generic_flow_text(ingredients, cooking_technique, spice_level),
+            "duration_minutes": 0,
+            "tips": "当前流程说明基于输入食材自动整理，建议结合现场状态微调火候。"
+        }
+    ]
+
+
+def build_steps_from_training_description(input_description: str) -> List[Dict[str, Any]]:
+    """从训练数据描述中提取步骤"""
+    text = (input_description or "").strip()
+    if not text:
+        return []
+
+    flow_text = extract_steps_text_from_description(text)
+    if not flow_text:
+        return []
+
+    return [
+        {
+            "instruction": flow_text,
+            "duration_minutes": 0,
+            "tips": "以下流程说明直接根据 ai_training_data 的 input_description 整理。"
+        }
+    ]
+
+
+def estimate_fallback_nutrition(counts: Counter) -> Dict[str, Any]:
+    """估算营养信息"""
+    eggs = counts.get("鸡蛋", 0)
+    tomatoes = counts.get("番茄", 0) + counts.get("西红柿", 0)
+    return {
+        "calories_per_serving": 120 * eggs + 25 * tomatoes,
+        "protein_g": 6 * eggs,
+        "fat_g": 5 * eggs,
+        "carbs_g": 5 * tomatoes,
+    }
+
+
+def build_training_tips(input_description: str, ingredients: List[str], max_time: int) -> str:
+    extracted = extract_steps_text_from_description(input_description)
+    if extracted:
+        return f"已根据训练库中的相关做法整理流程，建议在约 {max_time} 分钟内按顺序完成。"
+    return f"当前结果主要依据输入食材 {'、'.join(ingredients)} 和训练库相关文本整理而成。"
+
+
+def build_generic_flow_text(ingredients: List[str], cooking_technique: str, spice_level: int) -> str:
+    joined = "、".join(ingredients) if ingredients else "当前食材"
+    spice_text = "清淡" if spice_level <= 2 else "偏重口" if spice_level >= 4 else "中等"
+    return (
+        f"先将{joined}按菜式需要完成清洗和切配，再根据{cooking_technique}方式依次下锅处理。"
+        f"烹饪过程中保持{spice_text}风味方向，按食材成熟度补充基础调味，确认口感后出锅即可。"
+    )

@@ -1,8 +1,14 @@
 {
+  "rewrites": [
+    {
+      "source": "/app-dist/:path*",
+      "destination": "/app-dist/index.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/",
-      "destination": "/prototype/Chinese/%E5%AE%8C%E6%95%B4App-%E6%80%BB%E8%A3%85_%E7%9C%9F%E5%AE%9E%E9%98%B6%E6%AE%B5%E7%9B%B4%E8%BF%9E%E7%89%88.html",
+      "destination": "/app-dist/",
       "permanent": false
     }
   ]
