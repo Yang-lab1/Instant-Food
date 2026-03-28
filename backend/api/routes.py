@@ -97,8 +97,8 @@ async def ai_status():
     ai = get_ai_client()
     return {
         "available": ai.is_available,
-        "provider": "openai" if ai._openai_client else "none",
-        "model": ai.ai_model if ai._openai_client else None
+        "provider": ai.provider_name,
+        "model": ai.model_name
     }
 
 
@@ -141,7 +141,7 @@ async def generate_from_image(request: ImageRecognizeRequest):
             supabase.table("generation_logs").insert({
                 "recognized_ingredients": ingredient_names,
                 "generated_recipe": recipe_result.to_dict(),
-                "ai_model_used": "gpt-4-vision",
+                "ai_model_used": ai.model_name,
                 "quality_rating": None,
                 "created_at": datetime.utcnow().isoformat()
             }).execute()
@@ -309,7 +309,7 @@ async def list_recipes(
         if meal_type:
             query = query.eq("meal_type", meal_type)
         
-        response = query.range(offset, offset + limit - 1).order("created_at", ascending=False).execute()
+        response = query.range(offset, offset + limit - 1).order("created_at", desc=True).execute()
         
         return {
             "success": True,
@@ -596,9 +596,6 @@ async def export_training_data(limit: int = 1000):
         }
         
     except Exception as e:
-        logger.error(f"Export training        return {"success": True, "data": training_data}
-        
-    except Exception as e:
         logger.error(f"Export training data failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -618,7 +615,7 @@ async def list_archives(user_id: Optional[str] = None, limit: int = 20, offset: 
         if user_id:
             query = query.eq("user_id", user_id)
         
-        response = query.range(offset, offset + limit - 1).order("created_at", ascending=False).execute()
+        response = query.range(offset, offset + limit - 1).order("created_at", desc=True).execute()
         
         return {
             "success": True,

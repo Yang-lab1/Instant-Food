@@ -1,18 +1,18 @@
 """
 拍立食 - AI 服务客户端
-支持 OpenAI GPT-4 Vision 和 Anthropic Claude
+统一 AI 服务入口，优先支持 OpenAI / Gemini
 """
 import base64
 import json
 import logging
 import time
 from typing import Optional, Dict, Any, List
-from io import BytesIO
 
 from openai import OpenAI
 import anthropic
 
 from config import settings
+from api.gemini_client import get_gemini_client, GeminiServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class RecipeGenerationResult:
 
 
 class AIClient:
-    """AI 服务客户端"""
+    """统一 AI 服务客户端"""
     
     # 图片识别 Prompt
     IMAGE_RECOGNITION_PROMPT = """请分析这张食物图片，识别出主要的食材成分。
@@ -135,6 +135,7 @@ class AIClient:
     def __init__(self):
         self._openai_client: Optional[OpenAI] = None
         self._anthropic_client: Optional[anthropic.Anthropic] = None
+        self._gemini_client = get_gemini_client()
         
         if settings.has_openai():
             self._openai_client = OpenAI(api_key=settings.openai_api_key)
@@ -147,7 +148,29 @@ class AIClient:
     @property
     def is_available(self) -> bool:
         """检查 AI 服务是否可用"""
-        return self._openai_client is not None or self._anthropic_client is not None
+        return (
+            self._openai_client is not None
+            or self._anthropic_client is not None
+            or self._gemini_client.is_available
+        )
+
+    @property
+    def provider_name(self) -> str:
+        """当前可用的 AI 提供商。"""
+        if self._openai_client is not None:
+            return "openai"
+        if self._gemini_client.is_available:
+            return "gemini"
+        if self._anthropic_client is not None:
+            return "anthropic"
+        return "none"
+
+    @property
+    def model_name(self) -> Optional[str]:
+        """当前启用的模型名称。"""
+        if self.provider_name == "none":
+            return None
+        return settings.ai_model
     
     def recognize_image(self, image_data: bytes, image_type: str = "image/jpeg") -> ImageRecognitionResult:
         """
@@ -160,6 +183,18 @@ class AIClient:
         Returns:
             ImageRecognitionResult: 识别结果
         """
+        if self._openai_client is None and self._gemini_client.is_available:
+            try:
+                result = self._gemini_client.recognize_image(image_data, image_type)
+                return ImageRecognitionResult(
+                    ingredients=result.ingredients,
+                    cooking_method=result.cooking_method,
+                    nutrition_notes=result.nutrition_notes,
+                    allergen_warning=result.allergen_warning,
+                )
+            except GeminiServiceError as e:
+                raise AIServiceError(str(e))
+
         if not settings.has_openai():
             raise AIServiceError("OpenAI API key not configured")
         
@@ -201,6 +236,18 @@ class AIClient:
     
     def recognize_image_from_url(self, image_url: str) -> ImageRecognitionResult:
         """从 URL 识别图片"""
+        if self._openai_client is None and self._gemini_client.is_available:
+            try:
+                result = self._gemini_client.recognize_image_from_url(image_url)
+                return ImageRecognitionResult(
+                    ingredients=result.ingredients,
+                    cooking_method=result.cooking_method,
+                    nutrition_notes=result.nutrition_notes,
+                    allergen_warning=result.allergen_warning,
+                )
+            except GeminiServiceError as e:
+                raise AIServiceError(str(e))
+
         if not settings.has_openai():
             raise AIServiceError("OpenAI API key not configured")
         
@@ -258,6 +305,28 @@ class AIClient:
         Returns:
             RecipeGenerationResult: 生成的食谱
         """
+        if self._openai_client is None and self._gemini_client.is_available:
+            try:
+                result = self._gemini_client.generate_recipe(
+                    ingredients=ingredients,
+                    cooking_technique=cooking_technique,
+                    flavor_profile=flavor_profile,
+                    spice_level=spice_level,
+                    max_time=max_time,
+                    equipment=equipment,
+                )
+                return RecipeGenerationResult(
+                    title=result.title,
+                    title_zh=result.title_zh,
+                    description=result.description,
+                    ingredients=result.ingredients,
+                    steps=result.steps,
+                    tips=result.tips,
+                    nutrition=result.nutrition,
+                )
+            except GeminiServiceError as e:
+                raise AIServiceError(str(e))
+
         if not settings.has_openai():
             raise AIServiceError("OpenAI API key not configured")
         

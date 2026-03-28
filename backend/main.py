@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from api.routes import router
+from api.ai_client import get_ai_client
 
 # 配置日志
 logging.basicConfig(
@@ -21,10 +22,12 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
+    ai = get_ai_client()
+
     # 启动时
     logger.info("拍立食后端服务启动中...")
     logger.info(f"环境: {settings.app_env}")
-    logger.info(f"AI 服务: {'OpenAI' if settings.has_openai() else '未配置'}")
+    logger.info(f"AI 服务: {ai.provider_name}")
     
     yield
     

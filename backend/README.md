@@ -3,7 +3,7 @@
 ## 🚀 快速启动
 
 ### 1. 前置要求
-- Python 3.10+
+- Python 3.10-3.13
 - Supabase 账号
 - OpenAI API Key (可选，用于 AI 功能)
 
@@ -35,8 +35,13 @@ nano .env
 ### 4. 安装依赖
 
 ```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+如果你使用的是 `Python 3.13`，请确保先拉取最新依赖版本。旧版 `pydantic` 会尝试本地编译 `pydantic-core`，在未安装 Rust 工具链时容易报错。
+
+如果你使用 Gemini，建议在 `.env` 中把 `AI_MODEL` 和 `VISION_MODEL` 设为 `gemini-2.5-flash`，避免旧模型名失效导致 `generateContent` 返回 404。
 
 ### 5. 启动服务
 

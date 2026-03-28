@@ -1,9 +1,14 @@
 """
 拍立食 - 拍立食后端配置
 """
-from pydantic_settings import BaseSettings
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from typing import List, Optional
-import os
+
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
@@ -20,8 +25,8 @@ class Settings(BaseSettings):
     gemini_api_key: Optional[str] = None
     
     # AI 模型配置
-    ai_model: str = "gemini-1.5-flash"
-    vision_model: str = "gemini-1.5-flash"
+    ai_model: str = "gemini-2.5-flash"
+    vision_model: str = "gemini-2.5-flash"
     max_tokens: int = 4096
     temperature: float = 0.7
     
@@ -42,10 +47,32 @@ class Settings(BaseSettings):
     use_supabase_storage: bool = True
     storage_bucket: str = "recipe-images"
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        enable_decoding=False,
+    )
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def normalize_debug(cls, value):
+        """兼容非标准布尔环境值，避免外部环境变量污染导致启动失败。"""
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"release", "prod", "production"}:
+                return False
+            if normalized in {"debug", "dev", "development"}:
+                return True
+        return value
+
+    @field_validator("cors_origins", "allowed_image_types", mode="before")
+    @classmethod
+    def split_comma_separated_list(cls, value):
+        """兼容 .env 中的逗号分隔列表配置。"""
+        if isinstance(value, str):
+            return [item.strip() for item in value.split(",") if item.strip()]
+        return value
     
     @property
     def is_production(self) -> bool:
