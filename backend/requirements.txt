@@ -23,6 +23,7 @@ python-magic==0.4.27
 pydantic==2.6.0
 pydantic-settings==2.1.0
 python-dotenv==1.0.0
+# httpx 0.26.0 introduced the `proxy=` client argument used by gotrue 2.9.x.
 httpx==0.26.0
 tenacity==8.2.3
 
