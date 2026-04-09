@@ -1,0 +1,88 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="180" y1="120" x2="980" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F5EAD8"/>
+      <stop offset="1" stop-color="#DCC3A3"/>
+    </linearGradient>
+    <radialGradient id="bowl" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(600 710) rotate(90) scale(310 360)">
+      <stop stop-color="#FFF9EE"/>
+      <stop offset="1" stop-color="#E6D1AE"/>
+    </radialGradient>
+    <radialGradient id="yogurt" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(590 650) rotate(90) scale(240 280)">
+      <stop stop-color="#FFFDF9"/>
+      <stop offset="1" stop-color="#F1EBDD"/>
+    </radialGradient>
+    <linearGradient id="granola" x1="385" y1="768" x2="612" y2="986" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7A4A22"/>
+      <stop offset="1" stop-color="#A96A34"/>
+    </linearGradient>
+    <linearGradient id="banana" x1="740" y1="570" x2="844" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCE9A7"/>
+      <stop offset="1" stop-color="#EBCB66"/>
+    </linearGradient>
+    <linearGradient id="cookie" x1="800" y1="410" x2="904" y2="580" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C98746"/>
+      <stop offset="1" stop-color="#9A5A22"/>
+    </linearGradient>
+    <filter id="shadow" x="190" y="280" width="820" height="780" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="36"/>
+      <feGaussianBlur stdDeviation="48"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.247059 0 0 0 0 0.160784 0 0 0 0 0.0862745 0 0 0 0.28 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <ellipse cx="600" cy="990" rx="248" ry="74" fill="#9B7448" fill-opacity="0.22"/>
+
+  <g filter="url(#shadow)">
+    <ellipse cx="600" cy="708" rx="320" ry="338" fill="url(#bowl)"/>
+    <ellipse cx="600" cy="654" rx="268" ry="260" fill="url(#yogurt)"/>
+
+    <path d="M372 730C412 700 468 686 536 704L618 770C596 814 540 866 480 892C430 870 388 826 372 730Z" fill="url(#granola)"/>
+    <path d="M464 760L500 742L540 772L514 816L470 804L446 776L464 760Z" fill="#6F411A"/>
+    <path d="M522 804L548 786L590 812L570 852L524 846L504 820L522 804Z" fill="#865022"/>
+    <path d="M428 846L470 822L514 850L486 900L434 886L408 862L428 846Z" fill="#7E4B21"/>
+    <path d="M386 780L420 760L458 786L440 826L396 818L372 794L386 780Z" fill="#8B572A"/>
+
+    <ellipse cx="810" cy="664" rx="66" ry="82" transform="rotate(20 810 664)" fill="url(#banana)"/>
+    <ellipse cx="748" cy="676" rx="48" ry="64" transform="rotate(-18 748 676)" fill="#F7DB86"/>
+    <ellipse cx="788" cy="600" rx="44" ry="58" transform="rotate(6 788 600)" fill="#FCE8A4"/>
+    <circle cx="790" cy="664" r="6" fill="#C8A553"/>
+    <circle cx="744" cy="682" r="5" fill="#C8A553"/>
+    <circle cx="792" cy="596" r="5" fill="#C8A553"/>
+
+    <ellipse cx="520" cy="434" rx="60" ry="54" fill="#24324E"/>
+    <circle cx="520" cy="434" r="48" fill="#2A4F7D"/>
+    <circle cx="506" cy="418" r="10" fill="#7F9BC9" fill-opacity="0.5"/>
+
+    <ellipse cx="572" cy="604" rx="70" ry="64" fill="#20304A"/>
+    <circle cx="572" cy="604" r="56" fill="#274A77"/>
+    <circle cx="554" cy="584" r="10" fill="#86A5D4" fill-opacity="0.45"/>
+
+    <ellipse cx="742" cy="764" rx="60" ry="56" fill="#20304A"/>
+    <circle cx="742" cy="764" r="48" fill="#284970"/>
+    <circle cx="730" cy="748" r="9" fill="#86A5D4" fill-opacity="0.4"/>
+
+    <path d="M606 534L676 576L640 650L560 612L606 534Z" fill="#2D1D16"/>
+    <path d="M610 548L664 580L638 632L580 606L610 548Z" fill="#47281E"/>
+    <path d="M598 546L614 558" stroke="#6B4A3B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M634 566L650 578" stroke="#6B4A3B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M596 592L612 604" stroke="#6B4A3B" stroke-width="8" stroke-linecap="round"/>
+
+    <path d="M804 408L872 432L886 494L828 534L772 500L764 444L804 408Z" fill="url(#cookie)"/>
+    <circle cx="826" cy="458" r="10" fill="#F0C98A" fill-opacity="0.65"/>
+    <circle cx="852" cy="482" r="8" fill="#F0C98A" fill-opacity="0.5"/>
+
+    <path d="M654 468L692 486L676 514L636 498L654 468Z" fill="#FBF3E1"/>
+    <path d="M708 530L756 548L736 578L690 560L708 530Z" fill="#F6EDDA"/>
+    <path d="M734 468L780 484L760 514L716 500L734 468Z" fill="#FBF3E1"/>
+    <path d="M498 540L538 556L522 584L480 568L498 540Z" fill="#F8F1E3"/>
+    <path d="M632 708L670 724L654 750L614 734L632 708Z" fill="#FBF3E1"/>
+
+    <ellipse cx="600" cy="678" rx="264" ry="248" fill="white" fill-opacity="0.04"/>
+  </g>
+</svg>

@@ -491,7 +491,7 @@
 <div class='nexus-shell-device'><div class='nexus-shell-screen'>
 <div class="relative w-full min-h-screen bg-black overflow-hidden flex flex-col">
 <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 pt-12 text-white result-topbar wx-miniapp-nav">
-<button class="w-10 h-10 flex items-center justify-center bg-black/30 liquid-glass border border-white/10 hover:bg-black/50 transition-colors squircle-sm">
+<button id="resultBackButton" class="w-10 h-10 flex items-center justify-center bg-black/30 liquid-glass border border-white/10 hover:bg-black/50 transition-colors squircle-sm" type="button" aria-label="返回重构台">
 <span class="material-symbols-outlined text-sm">arrow_back_ios_new</span>
 </button>
 <h1 class="text-[13px] font-semibold tracking-wide uppercase opacity-90 drop-shadow-md text-white dark:text-gray-200">生成结果</h1>
@@ -501,7 +501,7 @@
 </header>
 <main class="flex-1 overflow-y-auto pb-40">
 <div class="relative w-full h-[292px]">
-<img alt="电影感摆盘作品，主角是香煎扇贝和鲜亮点缀" class="w-full h-full object-cover" data-default-src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfH9ao-G75C6IeeZBSeLv10Kw8-QjcU3PzsAp2KmtUD8Zexioge9W1dz0pOQOI8sSJ7IREhCFRBr_XcBnEVtkzIYPvhgyq8hiHlsug5SHLmrc0FdLTkvvWwg0E95MUpGJZi_F4DNbR1NLI3YzVChtM2MPFILkUDYZ6fvf3l5l2immrTCDi2Maf5uLqFpW8aabtIcYIHkrvdpI86zf2xbYKiHB48sWGXcsJN80-h6gjWoDOXp3zWr39DkdI7s_RIVtTbgCjrN8W80w" id="resultHeroImage" hidden/>
+<img alt="酸奶捞成品图" class="w-full h-full object-cover" data-default-src="../../assets/results/yogurt-bowl.svg" id="resultHeroImage" hidden/>
 <div class="absolute inset-0 flex items-center justify-center px-6 pt-20 pb-8" id="resultTextFallback" hidden>
 <div class="result-fallback-card w-full max-w-[276px] rounded-[28px] border border-white/10 px-5 py-4 text-white">
 <div class="text-[11px] uppercase tracking-[0.28em] text-[#c7a46a]/85 mb-4">文字版替代</div>
@@ -624,10 +624,17 @@
     const metricChips = Array.from(resultCopyBlock.querySelectorAll(".flex.justify-center.gap-3.mb-8 > div"));
     const stepSummaryNode = resultCopyBlock.querySelector(".recipe-step-summary");
     const stepsPanel = resultCopyBlock.querySelector(".recipe-steps-panel");
+    const backButton = document.getElementById("resultBackButton");
     const saveButton = document.querySelector(".absolute.bottom-0 button");
     const selection = bridge ? bridge.readSelection(window) : null;
-    const generatedResult = bridge ? bridge.readGenerationResult(window) : null;
+    const generatedResult = bridge && typeof bridge.getFixedYogurtResult === "function"
+      ? bridge.getFixedYogurtResult(window)
+      : (bridge ? bridge.readGenerationResult(window) : null);
     let recipeStepRows = [];
+
+    if (bridge && generatedResult) {
+      bridge.writeGenerationResult(generatedResult, window);
+    }
 
     function escapeHtml(value) {
       return String(value == null ? "" : value)
@@ -695,23 +702,24 @@
     function formatTechnique(result) {
       return (
         (result && result.recognition && result.recognition.cooking_method) ||
-        (selection && selection.technique) ||
+        (result && result.technique) ||
         "AI 生成"
       );
     }
 
-    function buildStepChips(step, index) {
+    function buildStepChips(step, index, result) {
+      const tastes = Array.isArray(result && result.tastes) ? result.tastes : [];
       const chips = [];
       if (step && step.duration_minutes) {
         chips.push({ strong: step.duration_minutes + " 分钟", label: "预计时长" });
       }
-      if (selection && selection.technique) {
-        chips.push({ strong: selection.technique, label: "主要技法" });
+      if (result && formatTechnique(result)) {
+        chips.push({ strong: formatTechnique(result), label: "主要技法" });
       }
-      if (Array.isArray(selection && selection.tastes) && selection.tastes[index]) {
-        chips.push({ strong: selection.tastes[index], label: "风味方向" });
-      } else if (Array.isArray(selection && selection.tastes) && selection.tastes.length) {
-        chips.push({ strong: selection.tastes[0], label: "风味方向" });
+      if (tastes[index]) {
+        chips.push({ strong: tastes[index], label: "风味方向" });
+      } else if (tastes.length) {
+        chips.push({ strong: tastes[0], label: "风味方向" });
       }
 
       if (!chips.length) {
@@ -723,7 +731,7 @@
 
     function buildFallbackHtml(result) {
       const ingredients = getRecipeIngredients(result).slice(0, 3);
-      const tastes = Array.isArray(selection && selection.tastes) ? selection.tastes : [];
+      const tastes = Array.isArray(result && result.tastes) ? result.tastes : [];
       const technique = formatTechnique(result);
 
       return `
@@ -772,7 +780,7 @@
       }
 
       stepsPanel.innerHTML = steps.map((step, index) => {
-        const chips = buildStepChips(step, index);
+        const chips = buildStepChips(step, index, result);
         return `
           <article class="recipe-step-row${index === 0 ? " is-active" : ""}">
             <div class="recipe-step-marker" aria-hidden="true"></div>
@@ -978,6 +986,12 @@
       heroImage.src = previewSrc;
     } else {
       showFallback();
+    }
+
+    if (backButton) {
+      backButton.addEventListener("click", () => {
+        window.location.assign("分子重构台.html");
+      });
     }
 
     if (saveButton) {

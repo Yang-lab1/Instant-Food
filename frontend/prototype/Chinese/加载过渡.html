@@ -1632,28 +1632,18 @@
       }, 2200);
     }
 
-    function buildGenerationRequest() {
+    function resolveGenerationSource() {
       const capturedImage = bridge ? bridge.readCapturedImage(window) : "";
       if (capturedImage) {
-        return {
-          source: "image",
-          path: "/api/v1/generate/from-image",
-          body: {
-            image_base64: capturedImage
-          }
-        };
+        return "image";
       }
 
       const selection = bridge ? bridge.readSelection(window) : null;
-      if (!selection) {
-        return null;
+      if (selection) {
+        return "selection";
       }
 
-      return {
-        source: "selection",
-        path: "/api/v1/generate/recipe",
-        body: bridge ? bridge.buildRecipePayload(selection) : selection
-      };
+      return "fixed";
     }
 
     async function startLoadingSequence() {
@@ -1661,9 +1651,8 @@
         return;
       }
 
-      const request = buildGenerationRequest();
-      if (!request) {
-        applyErrorState(new Error("没有找到可提交的图片或食材选择。"));
+      if (!bridge || typeof bridge.getFixedYogurtResult !== "function") {
+        applyErrorState(new Error("固定结果桥接未就绪。"));
         return;
       }
 
@@ -1672,16 +1661,14 @@
         bridge.clearGenerationResult(window);
       }
 
-      startVisualLoading(request.source);
+      startVisualLoading(resolveGenerationSource());
 
       try {
-        const apiUrl = bridge ? bridge.buildApiUrl(request.path, window) : request.path;
-        const result = bridge
-          ? await bridge.fetchJson(apiUrl, {
-              method: "POST",
-              body: JSON.stringify(request.body)
-            })
-          : {};
+        const result = bridge.getFixedYogurtResult(window);
+
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, 900);
+        });
 
         if (bridge) {
           bridge.writeGenerationResult(result, window);
