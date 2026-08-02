@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     gemini_api_key: Optional[str] = None
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
+    backup_api_key: Optional[str] = Field(default=None, alias="BACKUP_API_KEY")
+    backup_api_base_url: str = Field(default="https://api.openai.com/v1", alias="BACKUP_API_BASE_URL")
+    backup_text_model: Optional[str] = Field(default=None, alias="BACKUP_TEXT_MODEL")
+    backup_image_model: Optional[str] = Field(default=None, alias="BACKUP_IMAGE_MODEL")
+    backup_provider_name: str = Field(default="openai_compatible", alias="BACKUP_PROVIDER")
 
     ai_model: str = "gemini-2.5-flash"
     vision_model: str = "gemini-2.5-flash"
@@ -36,6 +41,10 @@ class Settings(BaseSettings):
         default="http://localhost:3000",
         alias="CORS_ORIGINS",
     )
+    cors_origin_regex: Optional[str] = Field(
+        default=r"^https://frontend(?:-[a-z0-9-]+)?(?:-yangs-projects-d2ad4c9e)?\.vercel\.app$|^https?://(?:localhost|127\.0\.0\.1)(?::\d+)?$",
+        alias="CORS_ORIGIN_REGEX",
+    )
 
     max_image_size_mb: int = 10
     allowed_image_types_raw: str = Field(
@@ -45,6 +54,19 @@ class Settings(BaseSettings):
 
     use_supabase_storage: bool = True
     storage_bucket: str = "recipe-images"
+
+    enable_traditional_normality: bool = Field(
+        default=True,
+        alias="ENABLE_TRADITIONAL_NORMALITY",
+    )
+    normality_model_path: str = Field(
+        default="models/best_model.pkl",
+        validation_alias=AliasChoices("NORMALITY_MODEL_PATH", "NORMALITY_CLF_PATH"),
+    )
+    normality_cooccur_path: str = Field(
+        default="models/cooccur_freq.pkl",
+        validation_alias=AliasChoices("NORMALITY_COOCCUR_PATH", "NORMALITY_VEC_PATH"),
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -78,10 +100,23 @@ class Settings(BaseSettings):
     def has_gemini(self) -> bool:
         return bool(self.gemini_api_key)
 
+    def has_backup_api(self) -> bool:
+        return bool(self.backup_api_key and self.backup_api_base_url.strip())
+
+    def has_backup_text_model(self) -> bool:
+        return bool(self.has_backup_api() and self.backup_text_model and self.backup_text_model.strip())
+
+    def has_backup_image_model(self) -> bool:
+        return bool(self.has_backup_api() and self.backup_image_model and self.backup_image_model.strip())
+
     @property
     def ai_provider(self) -> str:
         if self.has_gemini():
+            if self.has_backup_text_model():
+                return "gemini+backup"
             return "gemini"
+        if self.has_backup_text_model():
+            return "backup"
         if self.has_openai():
             return "openai"
         if self.has_anthropic():

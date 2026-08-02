@@ -20,6 +20,7 @@ from database.supabase_client import (
     get_supabase_admin,
     upload_generated_image,
 )
+from services.normality_service import get_scorer
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -66,6 +67,47 @@ class RecipeGenerateRequest(BaseModel):
                 names.append(cleaned)
 
         return names
+
+    def ingredient_details(self) -> List[Dict[str, str]]:
+        details: List[Dict[str, str]] = []
+
+        for item in self.ingredients:
+            if isinstance(item, str):
+                cleaned = item.strip()
+                if cleaned:
+                    details.append({"name": cleaned, "quantity": "", "unit": ""})
+                continue
+
+            if isinstance(item, dict):
+                if item.get("included", True) is False:
+                    continue
+                name = str(item.get("name", "")).strip()
+                if not name:
+                    continue
+                details.append(
+                    {
+                        "name": name,
+                        "quantity": str(item.get("quantity", "")).strip(),
+                        "unit": str(item.get("unit", "")).strip(),
+                    }
+                )
+                continue
+
+            included = getattr(item, "included", True)
+            if included is False:
+                continue
+            name = str(getattr(item, "name", "")).strip()
+            if not name:
+                continue
+            details.append(
+                {
+                    "name": name,
+                    "quantity": str(getattr(item, "quantity", "") or "").strip(),
+                    "unit": str(getattr(item, "unit", "") or "").strip(),
+                }
+            )
+
+        return details
 
     def resolved_cooking_technique(self) -> str:
         return (self.cooking_technique or self.technique or "家常快手").strip()
@@ -144,6 +186,7 @@ def _build_generation_response(
     *,
     image_asset: Optional[Dict[str, Any]] = None,
     recognition: Optional[Dict[str, Any]] = None,
+    normality: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     recipe_payload = recipe_result.to_dict()
     response: Dict[str, Any] = {
@@ -157,6 +200,15 @@ def _build_generation_response(
     if recognition is not None:
         response["recognition"] = recognition
 
+    if normality:
+        response["normality"] = normality
+        response["normality_score"] = normality.get("normality_score")
+        response["normality_label"] = normality.get("label")
+        response["normality_mood"] = normality.get("mood")
+        response["normality_text"] = normality.get("text")
+        response["normality_level"] = normality.get("level")
+        response["normality_verdict"] = normality.get("verdict")
+
     if image_asset:
         response["imageUrl"] = image_asset.get("url")
         response["boardPreview"] = image_asset.get("url")
@@ -169,11 +221,17 @@ def _generate_and_store_recipe_image(ai, recipe_result, technique: str, flavor_p
     if not settings.use_supabase_storage:
         return None
 
-    image_bytes, mime_type, _prompt = ai.generate_recipe_image(
-        recipe_result,
-        cooking_technique=technique,
-        flavor_profile=flavor_profile,
-    )
+    try:
+        image_bytes, mime_type, _prompt = ai.generate_recipe_image(
+            recipe_result,
+            cooking_technique=technique,
+            flavor_profile=flavor_profile,
+        )
+    except AIServiceError as error:
+        # 图片生成失败不阻断主食谱返回，避免用户直接看到整页失败。
+        logger.warning("Recipe image generation skipped: %s", error)
+        return None
+
     title = recipe_result.title_zh or recipe_result.title or "recipe"
     filename = f"{_sanitize_storage_name(title)}-{uuid.uuid4().hex[:8]}.png"
     return upload_generated_image(
@@ -186,9 +244,45 @@ def _generate_and_store_recipe_image(ai, recipe_result, technique: str, flavor_p
 
 def _decode_image_base64(image_base64: str) -> bytes:
     try:
-        return base64.b64decode(image_base64)
+        payload = image_base64.strip()
+        if payload.startswith("data:") and "," in payload:
+            payload = payload.split(",", 1)[1]
+        return base64.b64decode(payload)
     except Exception as error:
         raise HTTPException(status_code=400, detail="Invalid image_base64 payload") from error
+
+
+def _frontend_safe_ai_error(
+    error: AIServiceError,
+    *,
+    default_message: str = "暂未完成生成，请再试一次。",
+) -> HTTPException:
+    logger.error("AI flow failed: %s", error)
+    message = str(error).strip()
+    lowered = message.lower()
+
+    if "not configured" in lowered or "配置" in message:
+        return HTTPException(status_code=503, detail="后端 AI 配置不完整，请联系管理员检查环境变量。")
+
+    return HTTPException(status_code=502, detail=default_message)
+
+
+def _score_normality(
+    ingredients: List[str],
+    *,
+    cooking_method: Optional[str] = None,
+    seasonings: Optional[List[str]] = None,
+) -> Optional[Dict[str, Any]]:
+    try:
+        service = get_scorer()
+        return service.score(
+            ingredients=ingredients,
+            cooking_method=(cooking_method or "\u7092").strip() or "\u7092",
+            seasonings=seasonings,
+        )
+    except Exception as error:
+        logger.warning("Traditional normality scoring skipped: %s", error)
+        return None
 
 
 @router.get("/health")
@@ -203,20 +297,28 @@ async def health_check() -> Dict[str, str]:
 @router.get("/ai/status")
 async def ai_status() -> Dict[str, Any]:
     ai = get_ai_client()
+    normality_service = get_scorer()
     return {
         "available": ai.is_available,
         "provider": settings.ai_provider,
-        "model": settings.ai_model if ai.is_available else None,
-        "vision_model": settings.vision_model if ai.is_available else None,
-        "image_model": settings.image_model if ai.is_available else None,
+        "text_available": ai.text_available,
+        "vision_available": ai.vision_available,
+        "image_available": ai.image_available,
+        "traditional_normality_available": normality_service.available,
+        "model": settings.ai_model if settings.has_gemini() else None,
+        "vision_model": settings.vision_model if settings.has_gemini() else None,
+        "image_model": settings.image_model if settings.has_gemini() else None,
+        "backup_provider": settings.backup_provider_name if settings.has_backup_api() else None,
+        "backup_text_model": settings.backup_text_model if settings.has_backup_text_model() else None,
+        "backup_image_model": settings.backup_image_model if settings.has_backup_image_model() else None,
     }
 
 
 @router.post("/generate/from-image")
 async def generate_from_image(request: ImageRecognizeRequest) -> Dict[str, Any]:
     ai = get_ai_client()
-    if not ai.is_available:
-        raise HTTPException(status_code=503, detail="AI service not available")
+    if not ai.vision_available:
+        raise HTTPException(status_code=503, detail="Image recognition service not available")
 
     try:
         if request.image_base64:
@@ -231,10 +333,24 @@ async def generate_from_image(request: ImageRecognizeRequest) -> Dict[str, Any]:
             for item in recognition_result.ingredients
             if isinstance(item, dict) and item.get("name")
         ]
+        ingredient_details = [
+            {
+                "name": str(item.get("name", "")).strip(),
+                "quantity": str(item.get("estimated_quantity", "")).strip(),
+                "unit": "",
+            }
+            for item in recognition_result.ingredients
+            if isinstance(item, dict) and str(item.get("name", "")).strip()
+        ]
         recipe_result = ai.generate_recipe(
             ingredients=ingredient_names,
+            ingredient_details=ingredient_details,
             cooking_technique=recognition_result.cooking_method,
             flavor_profile="家常",
+        )
+        normality_result = _score_normality(
+            ingredient_names,
+            cooking_method=recognition_result.cooking_method,
         )
         image_asset = _generate_and_store_recipe_image(
             ai,
@@ -260,16 +376,17 @@ async def generate_from_image(request: ImageRecognizeRequest) -> Dict[str, Any]:
             recipe_result,
             image_asset=image_asset,
             recognition=recognition_result.to_dict(),
+            normality=normality_result,
         )
     except AIServiceError as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
+        raise _frontend_safe_ai_error(error, default_message="本次识别与生成暂未完成，请再试一次。") from error
 
 
 @router.post("/generate/recipe")
 async def generate_recipe(request: RecipeGenerateRequest) -> Dict[str, Any]:
     ai = get_ai_client()
-    if not ai.is_available:
-        raise HTTPException(status_code=503, detail="AI service not available")
+    if not ai.text_available:
+        raise HTTPException(status_code=503, detail="Recipe generation service not available")
 
     ingredient_names = request.ingredient_names()
     if not ingredient_names:
@@ -280,23 +397,32 @@ async def generate_recipe(request: RecipeGenerateRequest) -> Dict[str, Any]:
         flavor_profile = request.resolved_flavor_profile()
         recipe_result = ai.generate_recipe(
             ingredients=ingredient_names,
+            ingredient_details=request.ingredient_details(),
             cooking_technique=technique,
             flavor_profile=flavor_profile,
             spice_level=request.spice_level,
             max_time=request.max_time,
             equipment=request.resolved_equipment(),
         )
+        normality_result = _score_normality(
+            ingredient_names,
+            cooking_method=technique,
+        )
         image_asset = _generate_and_store_recipe_image(ai, recipe_result, technique, flavor_profile)
-        return _build_generation_response(recipe_result, image_asset=image_asset)
+        return _build_generation_response(
+            recipe_result,
+            image_asset=image_asset,
+            normality=normality_result,
+        )
     except AIServiceError as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
+        raise _frontend_safe_ai_error(error, default_message="暂未完成生成，请再试一次。") from error
 
 
 @router.post("/recognize/image")
 async def recognize_image(request: ImageRecognizeRequest) -> Dict[str, Any]:
     ai = get_ai_client()
-    if not ai.is_available:
-        raise HTTPException(status_code=503, detail="AI service not available")
+    if not ai.vision_available:
+        raise HTTPException(status_code=503, detail="Image recognition service not available")
 
     try:
         if request.image_base64:
@@ -307,7 +433,7 @@ async def recognize_image(request: ImageRecognizeRequest) -> Dict[str, Any]:
             raise HTTPException(status_code=400, detail="Either image_url or image_base64 required")
         return {"success": True, "result": result.to_dict()}
     except AIServiceError as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
+        raise _frontend_safe_ai_error(error, default_message="本次识别暂未完成，请再试一次。") from error
 
 
 @router.post("/recipes")
