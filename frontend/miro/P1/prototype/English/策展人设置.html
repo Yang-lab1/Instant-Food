@@ -1,0 +1,388 @@
+﻿<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Profile Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script>tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#235347",
+                        secondary: "#8EB69B",
+                        "background-light": "#000000",
+                        "background-dark": "#000000",
+                        "surface-dark": "#000000",
+                        "surface-light": "#000000",
+                        "text-light": "#FFFFFF",
+                        "text-dark": "#FFFFFF",
+                        "muted-dark": "#8E8E93",
+                        "muted-light": "#8E8E93",
+                        "danger": "#990000"
+                    },
+                    fontFamily: {
+                        display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Helvetica Neue"', 'sans-serif'],
+                        body: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'squircle': '40px',
+                        DEFAULT: "1rem",
+                    },
+                },
+            },
+        };</script>
+<style>
+        .liquid-glass {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+        }
+        .optical-ring {
+            position: relative;
+        }
+        .optical-ring::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(35, 83, 71, 0.6), transparent, rgba(35, 83, 71, 0.3));
+            z-index: -1;
+            filter: blur(2px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'wght' 300;
+        }
+        .bottom-dock {
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            width: min(calc(100% - 28px), 372px);
+            z-index: 60;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: end;
+            gap: 10px;
+            padding: 18px 14px 16px;
+            border-radius: 36px;
+            background: rgba(6, 6, 6, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 28px 56px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            line-height: 16px;
+            letter-spacing: 0.01em;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .bottom-nav-item span:last-child {
+            display: block;
+            min-width: 42px;
+            text-align: center;
+        }
+        .bottom-nav-item strong {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            font-size: 0;
+            line-height: 1;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.82);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bottom-nav-item strong .material-symbols-outlined {
+            font-size: 24px;
+            color: currentColor;
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+        .bottom-nav-item:hover {
+            color: rgba(255, 255, 255, 0.82);
+            transform: translateY(-1px);
+        }
+        .bottom-nav-item.active {
+            color: #ffffff;
+        }
+        .bottom-nav-item.active strong {
+            background: linear-gradient(180deg, rgba(55, 118, 101, 0.96), rgba(35, 83, 71, 0.98));
+            border-color: rgba(142, 182, 155, 0.26);
+            color: #ffffff;
+            box-shadow: 0 16px 30px rgba(35, 83, 71, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .bottom-nav-item.active strong .material-symbols-outlined {
+            font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+        }
+        .bottom-plus-wrap {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            top: -34px;
+        }
+        .bottom-plus {
+            width: 78px;
+            height: 78px;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            text-decoration: none;
+            background: linear-gradient(135deg, rgba(52, 106, 91, 0.98), rgba(35, 83, 71, 0.98));
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 18px 42px rgba(35, 83, 71, 0.48), 0 0 42px rgba(35, 83, 71, 0.22);
+            transition: transform 0.24s ease, box-shadow 0.24s ease;
+        }
+        .bottom-plus .material-symbols-outlined {
+            font-size: 36px;
+            font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 40;
+        }
+        .bottom-plus:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 22px 48px rgba(35, 83, 71, 0.56), 0 0 48px rgba(35, 83, 71, 0.24);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style data-nexus-shell>
+  html, body {
+    margin: 0;
+    min-height: 100%;
+  }
+  body.nexus-shell-body {
+    display: flex !important;
+    justify-content: center;
+    align-items: flex-start !important;
+    padding: 20px;
+    overflow: auto !important;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(35, 83, 71, 0.34) 0%, rgba(35, 83, 71, 0) 28%),
+      radial-gradient(circle at 82% 14%, rgba(142, 182, 155, 0.14) 0%, rgba(142, 182, 155, 0) 22%),
+      radial-gradient(circle at 50% 100%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 36%),
+      linear-gradient(180deg, #050505 0%, #000000 100%) !important;
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .nexus-shell-device {
+    position: relative;
+    width: min(100%, 414px);
+    min-height: calc(100vh - 40px);
+    border-radius: 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000000;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    isolation: isolate;
+  }
+  .nexus-shell-device::before,
+  .nexus-shell-device::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nexus-shell-device::before {
+    width: 220px;
+    height: 220px;
+    top: 72px;
+    right: -52px;
+    background: rgba(35, 83, 71, 0.24);
+  }
+  .nexus-shell-device::after {
+    width: 250px;
+    height: 250px;
+    bottom: 132px;
+    left: -96px;
+    background: rgba(142, 182, 155, 0.1);
+  }
+  .nexus-shell-screen {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+  }
+  .nexus-shell-screen > * {
+    position: relative;
+    z-index: 1;
+  }
+  .nexus-shell-device .fixed.bottom-0.left-0.w-full,
+  .nexus-shell-device .fixed.bottom-0.w-full {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+  }
+  .nexus-shell-device nav.bottom-dock {
+    position: absolute !important;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 20;
+  }
+  .nexus-shell-device main {
+    max-width: 100% !important;
+  }
+  @media (max-width: 480px) {
+    body.nexus-shell-body {
+      padding: 0;
+    }
+    .nexus-shell-device {
+      width: 100%;
+      min-height: 100dvh;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .nexus-shell-device nav.bottom-dock {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+    }
+  }
+</style>
+</head>
+<body class="bg-black text-white font-body min-h-screen antialiased nexus-shell-body">
+<div class='nexus-shell-device'><div class='nexus-shell-screen'>
+<header class="flex items-center justify-between px-6 py-4 sticky top-0 z-50 bg-black/80 backdrop-blur-md">
+<button class="text-white hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">arrow_back_ios</span>
+</button>
+<h1 class="font-display text-[17px] font-semibold tracking-tight text-white" style="">Identity Matrix</h1>
+<button class="text-white hover:text-primary transition-colors" style="">
+<span class="material-symbols-outlined" style="">more_vert</span>
+</button>
+</header>
+<main class="px-6 pb-40">
+<section class="flex flex-col items-center mt-8 mb-10">
+<div class="relative optical-ring w-32 h-32 p-[2px] mb-6 liquid-glass overflow-hidden rounded-squircle">
+<img alt="User Avatar" class="w-full h-full object-cover rounded-squircle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpHLs2i5-qgGABxeG3wk1qgWoRuFYwSus8C5Qz6cWn8-H56wZ63EOGvcYz8N1V_LBH2MWJu7iKwK_KwdhLRfe973TfJ7_JnOTNJ9L8uPTg1XQKr2x_jlr4nc5zlXd2VFqGDupTOkKtVnRxWsiBqs0dSW_JDPAzNRIHwseMr2LnpR6bxsl-ZC41OCSlQFFqmf4Kgkhyz7jXhXXJBmmiXbL1PdGlva0bSGhYVxlSOAs0fPPaPvyBUtNqNDT-qY4j3Kgbr7Y9MMnpGhE" style="">
+</div>
+<h2 class="font-display text-[34px] leading-tight font-bold mb-1 text-white tracking-tight" style="">Yang</h2>
+<p class="text-[12px] font-body text-primary font-regular tracking-[0.1em] uppercase" style="">Socio-Somatic Tier</p>
+</section>
+<section class="grid grid-cols-3 gap-4 mb-10">
+<div class="liquid-glass p-4 flex flex-col items-center justify-center rounded-squircle">
+<span class="text-[28px] font-display font-bold text-primary mb-1" style="">42</span>
+<span class="text-[10px] text-muted-dark uppercase tracking-wider text-center font-medium" style="">Calories Avoided</span>
+</div>
+<div class="liquid-glass p-4 flex flex-col items-center justify-center rounded-squircle">
+<span class="text-[28px] font-display font-bold text-primary mb-1" style="">9</span>
+<span class="text-[10px] text-muted-dark uppercase tracking-wider text-center font-medium" style="">Toxins Purged</span>
+</div>
+<div class="liquid-glass p-4 flex flex-col items-center justify-center rounded-squircle">
+<span class="text-[28px] font-display font-bold text-primary mb-1" style="">1</span>
+<span class="text-[10px] text-muted-dark uppercase tracking-wider text-center font-medium" style="">Status Level</span>
+</div>
+</section>
+<section class="space-y-6">
+<div>
+<h3 class="text-[12px] font-bold text-muted-dark uppercase tracking-widest mb-3 ml-2" style="">Biological Constraints</h3>
+<div class="liquid-glass overflow-hidden rounded-squircle">
+<a class="flex items-center justify-between p-4 border-b border-white/10 hover:bg-white/10 transition-colors" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary opacity-90" style="">science</span>
+<span class="font-body font-normal text-[17px] text-white tracking-tight" style="">Excluded Samples</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[15px] text-muted-dark font-normal tracking-tight" style="">Gluten, Soy</span>
+<span class="material-symbols-outlined text-[20px] text-muted-dark" style="">chevron_right</span>
+</div>
+</a>
+<a class="flex items-center justify-between p-4 border-b border-white/10 hover:bg-white/10 transition-colors" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary opacity-90" style="">restaurant_menu</span>
+<span class="font-body font-normal text-[17px] text-white tracking-tight" style="">Macro Targets</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-muted-dark" style="">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-white/10 transition-colors" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary opacity-90" style="">biotech</span>
+<span class="font-body font-normal text-[17px] text-white tracking-tight" style="">Genetic Predispositions</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-muted-dark" style="">chevron_right</span>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-[12px] font-bold text-muted-dark uppercase tracking-widest mb-3 ml-2" style="">System Access</h3>
+<div class="liquid-glass overflow-hidden rounded-squircle">
+<a class="flex items-center justify-between p-4 border-b border-white/10 hover:bg-white/10 transition-colors" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary opacity-90" style="">fingerprint</span>
+<span class="font-body font-normal text-[17px] text-white tracking-tight" style="">Authentication Logs</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-muted-dark" style="">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 border-b border-white/10 hover:bg-white/10 transition-colors" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary opacity-90" style="">notifications_active</span>
+<span class="font-body font-normal text-[17px] text-white tracking-tight" style="">Sensory Alerts</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-muted-dark" style="">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4 hover:bg-danger/10 transition-colors group bg-black" href="#" style="">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-danger group-hover:text-danger/90" style="color: rgb(153, 0, 0);">delete_forever</span>
+<span class="font-body font-normal text-[17px] text-danger tracking-tight" style="color: rgb(153, 0, 0);">Burn the Archives</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+</main>
+<nav class="bottom-dock" aria-label="Bottom navigation">
+<a class="bottom-nav-item" href="Nexus.html">
+<strong><span class="material-symbols-outlined">home</span></strong>
+<span>Home</span>
+</a>
+<a class="bottom-nav-item" href="鑹烘湳鐨勮癁鐢?html">
+<strong><span class="material-symbols-outlined">storefront</span></strong>
+<span>Shop</span>
+</a>
+<div class="bottom-plus-wrap">
+<a class="bottom-plus" href="涓婚〉.html" aria-label="New capture">
+<span class="material-symbols-outlined">add</span>
+</a>
+</div>
+<a class="bottom-nav-item" href="椋庡懗妗ｆ棣?html">
+<strong><span class="material-symbols-outlined">history</span></strong>
+<span>Logs</span>
+</a>
+<a class="bottom-nav-item active" href="绛栧睍浜鸿缃?html">
+<strong><span class="material-symbols-outlined">person</span></strong>
+<span>Me</span>
+</a>
+</nav>
+</div></div>
+</body></html>
+
+

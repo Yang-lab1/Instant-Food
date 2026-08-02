@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>拍立食 | 艺术的诞生</title>
+<link href="wechat-unified.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script content="tailwind.config = {
+        darkMode: &quot;class&quot;,
+        theme: {
+          extend: {
+            colors: {
+              primary: &quot;#235347&quot;,
+              accent: &quot;#8EB69B&quot;,
+              &quot;background-light&quot;: &quot;#000000&quot;,
+              &quot;background-dark&quot;: &quot;#000000&quot;,
+              &quot;surface-light&quot;: &quot;#161616&quot;,
+              &quot;surface-dark&quot;: &quot;#161616&quot;,
+              &quot;glass-light&quot;: &quot;rgba(35, 83, 71, 0.2)&quot;,
+              &quot;glass-dark&quot;: &quot;rgba(35, 83, 71, 0.4)&quot;,
+              &quot;border-light&quot;: &quot;rgba(255, 255, 255, 0.1)&quot;,
+              &quot;border-dark&quot;: &quot;rgba(255, 255, 255, 0.05)&quot;,
+            },
+            fontFamily: {
+              display: ['&quot;SF Pro Display&quot;', '&quot;PingFang SC&quot;', '&quot;Microsoft YaHei&quot;', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+              sans: ['&quot;SF Pro Text&quot;', '&quot;PingFang SC&quot;', '&quot;Microsoft YaHei&quot;', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: &quot;40px&quot;,
+              'squircle': '40px',
+              'squircle-sm': '20px',
+            },
+          },
+        },
+      };" src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries">tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#235347",
+              accent: "#8EB69B",
+              "background-light": "#000000",
+              "background-dark": "#000000",
+              "surface-light": "#161616",
+              "surface-dark": "#161616",
+              "glass-light": "rgba(35, 83, 71, 0.2)",
+              "glass-dark": "rgba(35, 83, 71, 0.4)",
+              "border-light": "rgba(255, 255, 255, 0.1)",
+              "border-dark": "rgba(255, 255, 255, 0.05)",
+            },
+            fontFamily: {
+              display: ['"SF Pro Display"', '"PingFang SC"', '"Microsoft YaHei"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+              sans: ['"SF Pro Text"', '"PingFang SC"', '"Microsoft YaHei"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: "1.5rem",
+              'squircle': '1.5rem',
+            },
+          },
+        },
+      };</script>
+<script>tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#235347",
+              "background-light": "#f8f9fa",
+              "background-dark": "#000000",
+              "surface-light": "#ffffff",
+              "surface-dark": "#161616",
+              "glass-light": "rgba(255, 255, 255, 0.7)",
+              "glass-dark": "rgba(30, 30, 30, 0.6)",
+              "border-light": "rgba(0, 0, 0, 0.05)",
+              "border-dark": "rgba(255, 255, 255, 0.05)",
+            },
+            fontFamily: {
+              display: ['"SF Pro Display"', '"PingFang SC"', '"Microsoft YaHei"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+              sans: ['"SF Pro Text"', '"PingFang SC"', '"Microsoft YaHei"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: "1.25rem",
+            },
+          },
+        },
+      };</script>
+<style>::-webkit-scrollbar {
+            display: none;
+        }
+        .liquid-glass {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: inset 0 0 0 0.5pt rgba(255, 255, 255, 0.12);
+            background: rgba(35, 83, 71, 0.25);
+        }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    .squircle {
+      border-radius: 40px;
+      mask-image: paint(squircle);
+      -webkit-mask-image: paint(squircle);
+    }
+    .squircle-sm {
+      border-radius: 20px;
+      mask-image: paint(squircle);
+      -webkit-mask-image: paint(squircle);
+    }
+    [hidden] {
+      display: none !important;
+    }
+    .result-fallback-card {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(8, 8, 9, 0.78), rgba(8, 8, 9, 0.92));
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+    .steps-strip {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .steps-strip::-webkit-scrollbar {
+      display: none;
+    }
+    .recipe-steps-panel {
+      position: relative;
+      padding-left: 42px;
+    }
+    .recipe-steps-panel::before {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 22px;
+      bottom: 22px;
+      width: 2px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(142, 182, 155, 0.95), rgba(142, 182, 155, 0.36) 52%, rgba(255, 255, 255, 0.08) 100%);
+      box-shadow: 0 0 18px rgba(35, 83, 71, 0.24);
+    }
+    .recipe-step-row {
+      position: relative;
+      padding-bottom: 18px;
+      transition:
+        opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform, filter;
+    }
+    .recipe-step-row:last-child {
+      padding-bottom: 0;
+    }
+    .recipe-step-marker {
+      position: absolute;
+      left: -42px;
+      top: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.03);
+      transition:
+        background 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 1;
+    }
+    .recipe-step-marker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.38);
+      box-shadow: none;
+      transition:
+        background 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .recipe-step-content {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 18px 18px 18px 20px;
+      background: linear-gradient(180deg, rgba(22, 22, 22, 0.92), rgba(11, 11, 11, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition:
+        border-color 360ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .recipe-step-content::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(142, 182, 155, 0.08), rgba(142, 182, 155, 0) 46%);
+      pointer-events: none;
+    }
+    .recipe-step-row:not(.is-active) {
+      opacity: 0.43;
+      filter: saturate(0.9);
+    }
+    .recipe-step-row:not(.is-active) .recipe-step-content {
+      border-color: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      transform: translateX(0);
+      filter: brightness(0.92) saturate(0.94);
+    }
+    .recipe-step-row:not(.is-active) .recipe-step-marker {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.018);
+      transform: scale(0.94) translateZ(0);
+    }
+    .recipe-step-row:not(.is-active) .recipe-step-marker::before {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+      transform: scale(0.86);
+    }
+    .recipe-step-row.is-active {
+      opacity: 1;
+      filter: saturate(1);
+    }
+    .recipe-step-row.is-active .recipe-step-marker {
+      background: linear-gradient(180deg, rgba(112, 196, 167, 0.98), rgba(35, 83, 71, 1));
+      border-color: rgba(255, 255, 255, 0.44);
+      box-shadow: 0 14px 28px rgba(35, 83, 71, 0.34), 0 0 0 8px rgba(35, 83, 71, 0.11);
+      transform: scale(1.02) translateZ(0);
+    }
+    .recipe-step-row.is-active .recipe-step-marker::before {
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      transform: scale(1);
+    }
+    .recipe-step-row.is-active .recipe-step-content {
+      border-color: rgba(142, 182, 155, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(35, 83, 71, 0.1);
+      transform: translateX(1px);
+      filter: brightness(1.02) saturate(1.02);
+    }
+    .recipe-step-overline {
+      margin: 0 0 6px;
+      color: rgba(142, 182, 155, 0.92);
+      font-size: var(--miro-type-kicker-size);
+      line-height: var(--miro-type-kicker-line);
+      letter-spacing: 0.12em;
+      font-weight: var(--miro-font-weight-medium);
+    }
+    .recipe-step-title {
+      margin: 0;
+      font-family: var(--miro-font-display);
+      font-size: var(--miro-type-recipe-title-size);
+      line-height: var(--miro-type-recipe-title-line);
+      font-weight: var(--miro-font-weight-strong);
+      letter-spacing: -0.03em;
+      color: #ffffff;
+    }
+    .recipe-step-chips {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      margin: 12px 0 10px;
+      min-width: 0;
+    }
+    .recipe-step-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(35, 83, 71, 0.22);
+      border: 1px solid rgba(142, 182, 155, 0.16);
+      color: rgba(255, 255, 255, 0.74);
+      font-size: var(--miro-type-chip-sm-size);
+      line-height: var(--miro-type-chip-sm-line);
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      flex: 0 1 auto;
+      min-width: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+    .recipe-step-chip strong {
+      display: inline-block;
+      white-space: nowrap;
+      color: rgba(255, 255, 255, 0.98);
+      font-family: var(--miro-font-display);
+      font-weight: var(--miro-font-weight-semibold);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 12px rgba(142, 182, 155, 0.18);
+    }
+    .recipe-step-chip span {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .recipe-step-row.is-compact .recipe-step-chips {
+      gap: 3px;
+    }
+    .recipe-step-row.is-compact .recipe-step-chip {
+      gap: 3px;
+      padding: 4px 6px;
+      font-size: var(--miro-type-chip-xs-size);
+      letter-spacing: -0.025em;
+    }
+    .recipe-step-row.is-compact .recipe-step-chip strong {
+      letter-spacing: -0.035em;
+      font-size: var(--miro-type-chip-xs-size);
+    }
+    .recipe-step-copy {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: var(--miro-type-body-sm-size);
+      line-height: var(--miro-type-body-sm-line);
+      font-family: var(--miro-font-body);
+    }
+    .recipe-step-copy strong {
+      color: #8eb69b;
+      font-weight: var(--miro-font-weight-strong);
+      font-variant-numeric: tabular-nums;
+    }
+    .recipe-step-summary {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, 0.52);
+      font-size: var(--miro-type-caption-size);
+      line-height: var(--miro-type-caption-line);
+      letter-spacing: -0.01em;
+    }
+  </style>
+<style data-nexus-shell>
+  html, body {
+    margin: 0;
+    min-height: 100%;
+  }
+  body.nexus-shell-body {
+    display: flex !important;
+    justify-content: center;
+    align-items: flex-start !important;
+    padding: 20px;
+    overflow: auto !important;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(35, 83, 71, 0.34) 0%, rgba(35, 83, 71, 0) 28%),
+      radial-gradient(circle at 82% 14%, rgba(142, 182, 155, 0.14) 0%, rgba(142, 182, 155, 0) 22%),
+      radial-gradient(circle at 50% 100%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 36%),
+      linear-gradient(180deg, #050505 0%, #000000 100%) !important;
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .nexus-shell-device {
+    position: relative;
+    width: min(100%, 414px);
+    min-height: calc(100vh - 40px);
+    border-radius: 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000000;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    isolation: isolate;
+  }
+  .nexus-shell-device::before,
+  .nexus-shell-device::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nexus-shell-device::before {
+    width: 220px;
+    height: 220px;
+    top: 72px;
+    right: -52px;
+    background: rgba(35, 83, 71, 0.24);
+  }
+  .nexus-shell-device::after {
+    width: 250px;
+    height: 250px;
+    bottom: 132px;
+    left: -96px;
+    background: rgba(142, 182, 155, 0.1);
+  }
+  .nexus-shell-screen {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+  }
+  .nexus-shell-screen > * {
+    position: relative;
+    z-index: 1;
+  }
+  .nexus-shell-device .fixed.bottom-0.left-0.w-full,
+  .nexus-shell-device .fixed.bottom-0.w-full {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+  }
+  .nexus-shell-device nav.bottom-dock {
+    position: absolute !important;
+    left: 20px;
+    right: 20px;
+    bottom: 8px;
+    z-index: 20;
+  }
+  .nexus-shell-device main {
+    max-width: 100% !important;
+  }
+  @media (max-width: 480px) {
+    body.nexus-shell-body {
+      padding: 0;
+    }
+    .nexus-shell-device {
+      width: 100%;
+      min-height: 100dvh;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .nexus-shell-device nav.bottom-dock {
+      left: 20px;
+      right: 20px;
+      bottom: 8px;
+    }
+  }
+</style>
+<style data-phase5-baseline>
+  :root {
+    --brand-primary: #235347;
+    --brand-accent: #8EB69B;
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --radius-device: 40px;
+    --radius-card: 28px;
+    --radius-pill: 999px;
+    --font-display: var(--miro-font-display);
+    --font-body: var(--miro-font-body);
+    --motion-fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html, body { font-family: var(--font-body); }
+  h1, h2, h3, h4, .recipe-step-title { font-family: var(--font-display); }
+  .device, .nexus-shell-device { border-radius: var(--radius-device) !important; }
+  .recipe-step-content, .result-fallback-card, .sheet, .panel, .card, .obsidian-glass { border-radius: var(--radius-card) !important; }
+  .recipe-step-chip, .chip, .pill, .cta, button {
+    transition: transform var(--motion-fast), opacity var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast), box-shadow var(--motion-fast);
+  }
+  button:active, .cta:active { transform: scale(0.98); }
+  .text-primary { color: var(--brand-primary) !important; }
+  .bg-primary { background-color: var(--brand-primary) !important; }
+  .border-primary { border-color: var(--brand-primary) !important; }
+</style>
+</head>
+<body class="bg-black flex justify-center items-center min-h-screen font-sans antialiased p2-type-page-base text-white nexus-shell-body">
+<div class='nexus-shell-device'><div class='nexus-shell-screen'>
+<div class="relative w-full min-h-screen bg-black overflow-hidden flex flex-col">
+<header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 pt-12 text-white result-topbar wx-miniapp-nav">
+<button class="w-10 h-10 flex items-center justify-center bg-black/30 liquid-glass border border-white/10 hover:bg-black/50 transition-colors squircle-sm">
+<span class="material-symbols-outlined p2-type-icon-sm">arrow_back_ios_new</span>
+</button>
+<h1 class="p2-type-control-sm tracking-wide uppercase opacity-90 drop-shadow-md text-white dark:text-gray-200">生成结果</h1>
+<button class="w-10 h-10 flex items-center justify-center bg-black/30 liquid-glass border border-white/10 hover:bg-black/50 transition-colors squircle-sm">
+<span class="material-symbols-outlined p2-type-icon-lg">more_horiz</span>
+</button>
+</header>
+<main class="flex-1 overflow-y-auto pb-40">
+<div class="relative w-full h-[292px]">
+<img alt="电影感摆盘作品，主角是香煎扇贝和鲜亮点缀" class="w-full h-full object-cover" data-default-src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfH9ao-G75C6IeeZBSeLv10Kw8-QjcU3PzsAp2KmtUD8Zexioge9W1dz0pOQOI8sSJ7IREhCFRBr_XcBnEVtkzIYPvhgyq8hiHlsug5SHLmrc0FdLTkvvWwg0E95MUpGJZi_F4DNbR1NLI3YzVChtM2MPFILkUDYZ6fvf3l5l2immrTCDi2Maf5uLqFpW8aabtIcYIHkrvdpI86zf2xbYKiHB48sWGXcsJN80-h6gjWoDOXp3zWr39DkdI7s_RIVtTbgCjrN8W80w" id="resultHeroImage" hidden/>
+<div class="absolute inset-0 flex items-center justify-center px-6 pt-20 pb-8" id="resultTextFallback" hidden>
+<div class="result-fallback-card w-full max-w-[276px] rounded-[28px] border border-white/10 px-5 py-4 text-white">
+<div class="p2-type-kicker uppercase tracking-[0.28em] text-[#c7a46a]/85 mb-4">文字版替代</div>
+<div class="space-y-3 p2-type-caption">
+<div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+<span class="p2-type-control-sm text-white">鸡胸肉</span>
+<span class="whitespace-nowrap text-[#c7a46a]">2 块</span>
+</div>
+<div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+<span class="p2-type-control-sm text-white">樱桃番茄</span>
+<span class="whitespace-nowrap text-[#c7a46a]">6 颗</span>
+</div>
+<div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+<span class="p2-type-control-sm text-white">蒜瓣</span>
+<span class="whitespace-nowrap text-[#c7a46a]">3 瓣</span>
+</div>
+<div class="pt-2 text-[#c7a46a]/85 p2-type-kicker uppercase tracking-[0.24em]">做法与口味</div>
+<div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+<span class="p2-type-control-sm text-white">做法</span>
+<span class="whitespace-nowrap text-[#c7a46a]">烘烤</span>
+</div>
+<div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+<span class="p2-type-control-sm text-white">口味</span>
+<span class="whitespace-nowrap text-[#c7a46a]">辣 · 鲜</span>
+</div>
+<div class="flex items-start justify-between gap-4 pt-2 p2-type-row-meta text-white/65">
+<span>生成方向</span>
+<span class="whitespace-nowrap text-right">焦香热盘</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-light via-background-light/70 via-black/16 to-black/12 dark:from-background-dark dark:via-background-dark/72 dark:to-black/18 pointer-events-none"></div>
+</div>
+<div class="px-6 relative z-10" id="resultCopyBlock">
+<div class="mb-6 text-center">
+<h2 class="font-display p2-type-hero-title mb-3 text-white tracking-[-0.04em]">扇贝失控现场</h2>
+<p class="max-w-[336px] mx-auto p2-type-body-sm text-white/66">
+                        疯了。正常度：37%，勇士请继续。
+                    </p>
+</div>
+<div class="flex justify-center gap-3 mb-8">
+<div class="flex h-12 items-center gap-2 px-5 bg-white/[0.07] backdrop-blur-[18px] border border-white/[0.12] text-white/86 p2-type-chip-lg rounded-[999px] shadow-[0_18px_36px_rgba(0,0,0,0.24)]">
+<span class="material-symbols-outlined text-accent p2-type-icon-lg">schedule</span>
+                        45 分钟
+                    </div>
+<div class="flex h-12 items-center gap-2 px-5 bg-white/[0.07] backdrop-blur-[18px] border border-white/[0.12] text-white/86 p2-type-chip-lg rounded-[999px] shadow-[0_18px_36px_rgba(0,0,0,0.24)]">
+<span class="material-symbols-outlined text-accent p2-type-icon-lg">local_fire_department</span>
+                        前卫摆盘
+                    </div>
+</div>
+<div class="pb-4">
+<div class="mb-4">
+<h3 class="font-display p2-type-row-title text-white pl-3 border-l-2 border-accent tracking-tight">制作步骤</h3>
+<p class="recipe-step-summary">纯文字保留火候、颜色与摆位，读完就能落盘。</p>
+</div>
+<section class="recipe-steps-panel">
+<article class="recipe-step-row is-active">
+<div class="recipe-step-marker" aria-hidden="true"></div>
+<div class="recipe-step-content min-w-0 flex-1">
+<p class="recipe-step-overline">步骤 01</p>
+<h4 class="recipe-step-title">冷盘打底</h4>
+<div class="recipe-step-chips">
+<span class="recipe-step-chip"><strong>2 分钟</strong><span>乳化</span></span>
+<span class="recipe-step-chip"><strong>象牙白</strong><span>看到就停</span></span>
+<span class="recipe-step-chip"><strong>9 cm</strong><span>椭圆底</span></span>
+</div>
+<p class="recipe-step-copy">白花菜泥与一小块黄油小火乳化 <strong>2 分钟</strong>，酱体转成 <strong>象牙白</strong>、表面像缎面就停；勺背抹成约 <strong>9 cm</strong> 的椭圆底，盘边留白。</p>
+</div>
+</article>
+<article class="recipe-step-row">
+<div class="recipe-step-marker" aria-hidden="true"></div>
+<div class="recipe-step-content min-w-0 flex-1">
+<p class="recipe-step-overline">步骤 02</p>
+<h4 class="recipe-step-title">热锅定色</h4>
+<div class="recipe-step-chips">
+<span class="recipe-step-chip"><strong>190°C</strong><span>锅面起细纹</span></span>
+<span class="recipe-step-chip"><strong>45 秒 / 面</strong><span>两面快煎</span></span>
+<span class="recipe-step-chip"><strong>60 秒</strong><span>出锅静置</span></span>
+</div>
+<p class="recipe-step-copy">扇贝表面先擦干，下锅前再撒盐；油面起细纹就下锅，两面各煎 <strong>45 秒</strong>，边缘从 <strong>半透明</strong> 变 <strong>乳白</strong>、焦面到 <strong>浅榛色</strong> 就翻面。</p>
+</div>
+</article>
+<article class="recipe-step-row">
+<div class="recipe-step-marker" aria-hidden="true"></div>
+<div class="recipe-step-content min-w-0 flex-1">
+<p class="recipe-step-overline">步骤 03</p>
+<h4 class="recipe-step-title">偏心收尾</h4>
+<div class="recipe-step-chips">
+<span class="recipe-step-chip"><strong>1 cm</strong><span>离盘心偏移</span></span>
+<span class="recipe-step-chip"><strong>2 点</strong><span>酱汁即可</span></span>
+<span class="recipe-step-chip"><strong>3 片</strong><span>绿叶收束</span></span>
+</div>
+<p class="recipe-step-copy">主扇贝离盘心偏 <strong>1 cm</strong> 放置，只留一面完整焦色朝上；酱汁点 <strong>2 处</strong>，绿叶 <strong>3 片</strong> 即止，最后擦净盘边，让画面保持安静。</p>
+</div>
+</article>
+</section>
+</div>
+</div>
+</main>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark dark:to-transparent z-20">
+<button class="w-full py-4 bg-primary hover:bg-opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-black/30 squircle">
+<span class="text-white p2-type-cta tracking-tight">生成完整菜谱</span>
+<span class="material-symbols-outlined text-white p2-type-icon-sm">auto_awesome</span>
+</button>
+</div>
+</div>
+</div></div>
+<script src="instant-food-api-bridge.js"></script>
+<script>
+  (function () {
+    const bridge = window.InstantFoodApiBridge;
+    const heroImage = document.getElementById("resultHeroImage");
+    const textFallback = document.getElementById("resultTextFallback");
+    const resultCopyBlock = document.getElementById("resultCopyBlock");
+    const resultScroller = document.querySelector("main");
+    const params = new URLSearchParams(window.location.search);
+    const titleNode = resultCopyBlock.querySelector("h2");
+    const summaryNode = resultCopyBlock.querySelector(".mb-6 p");
+    const metricChips = Array.from(resultCopyBlock.querySelectorAll(".flex.justify-center.gap-3.mb-8 > div"));
+    const stepSummaryNode = resultCopyBlock.querySelector(".recipe-step-summary");
+    const stepsPanel = resultCopyBlock.querySelector(".recipe-steps-panel");
+    const saveButton = document.querySelector(".absolute.bottom-0 button");
+    const selection = bridge ? bridge.readSelection(window) : null;
+    const generatedResult = bridge ? bridge.readGenerationResult(window) : null;
+    const SAVED_ARCHIVE_COUNT_KEY = "instantFoodSavedArchiveCount";
+    let recipeStepRows = [];
+
+    function incrementLocalCounter(key) {
+      try {
+        const current = Number.parseInt(localStorage.getItem(key) || "0", 10);
+        const next = (Number.isFinite(current) && current > 0 ? current : 0) + 1;
+        localStorage.setItem(key, String(next));
+      } catch (error) {}
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function getVisibleSelectionIngredients() {
+      return Array.isArray(selection && selection.ingredients)
+        ? selection.ingredients.filter((item) => item && item.included !== false && String(item.name || "").trim())
+        : [];
+    }
+
+    function getRecipeIngredients(result) {
+      const recipeIngredients = Array.isArray(result && result.recipe && result.recipe.ingredients)
+        ? result.recipe.ingredients
+        : [];
+
+      if (recipeIngredients.length) {
+        return recipeIngredients
+          .map((item) => {
+            const name = String(item && item.name || "").trim();
+            const quantity = [item && item.quantity, item && item.unit].filter(Boolean).join(" ").trim();
+            return { name, quantity: quantity || "适量" };
+          })
+          .filter((item) => item.name);
+      }
+
+      return getVisibleSelectionIngredients().map((item) => ({
+        name: String(item.name || "").trim(),
+        quantity: [item.count, item.unit].filter(Boolean).join(" ").trim() || "适量"
+      }));
+    }
+
+    function resolvePreviewSrc(result) {
+      return (
+        params.get("boardPreview") ||
+        (result && (result.boardPreview || result.imageUrl)) ||
+        sessionStorage.getItem("generatedBoardPreview") ||
+        heroImage.dataset.defaultSrc
+      );
+    }
+
+    function formatDuration(result) {
+      const steps = Array.isArray(result && result.steps) ? result.steps : [];
+      const explicitMinutes = steps.reduce((sum, step) => {
+        const value = Number(step && step.duration_minutes);
+        return sum + (Number.isFinite(value) ? value : 0);
+      }, 0);
+
+      if (explicitMinutes > 0) {
+        return explicitMinutes + " 分钟";
+      }
+
+      if (steps.length) {
+        return steps.length + " 步";
+      }
+
+      return "即刻生成";
+    }
+
+    function formatTechnique(result) {
+      return (
+        (result && result.recognition && result.recognition.cooking_method) ||
+        (selection && selection.technique) ||
+        "AI 生成"
+      );
+    }
+
+    function buildStepChips(step, index) {
+      const chips = [];
+      if (step && step.duration_minutes) {
+        chips.push({ strong: step.duration_minutes + " 分钟", label: "预计时长" });
+      }
+      if (selection && selection.technique) {
+        chips.push({ strong: selection.technique, label: "主要技法" });
+      }
+      if (Array.isArray(selection && selection.tastes) && selection.tastes[index]) {
+        chips.push({ strong: selection.tastes[index], label: "风味方向" });
+      } else if (Array.isArray(selection && selection.tastes) && selection.tastes.length) {
+        chips.push({ strong: selection.tastes[0], label: "风味方向" });
+      }
+
+      if (!chips.length) {
+        chips.push({ strong: "按步骤完成", label: "生成建议" });
+      }
+
+      return chips.slice(0, 3);
+    }
+
+    function buildFallbackHtml(result) {
+      const ingredients = getRecipeIngredients(result).slice(0, 3);
+      const tastes = Array.isArray(selection && selection.tastes) ? selection.tastes : [];
+      const technique = formatTechnique(result);
+
+      return `
+        <div class="result-fallback-card w-full max-w-[276px] rounded-[28px] border border-white/10 px-5 py-4 text-white">
+          <div class="p2-type-kicker uppercase tracking-[0.28em] text-[#c7a46a]/85 mb-4">文字版替代</div>
+          <div class="space-y-3 p2-type-caption">
+            ${ingredients.map((item) => `
+              <div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+                <span class="p2-type-control-sm text-white">${escapeHtml(item.name)}</span>
+                <span class="whitespace-nowrap text-[#c7a46a]">${escapeHtml(item.quantity)}</span>
+              </div>
+            `).join("")}
+            <div class="pt-2 text-[#c7a46a]/85 p2-type-kicker uppercase tracking-[0.24em]">做法与口味</div>
+            <div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+              <span class="p2-type-control-sm text-white">做法</span>
+              <span class="whitespace-nowrap text-[#c7a46a]">${escapeHtml(technique)}</span>
+            </div>
+            <div class="flex items-start justify-between gap-4 border-b border-white/8 pb-2">
+              <span class="p2-type-control-sm text-white">口味</span>
+              <span class="whitespace-nowrap text-[#c7a46a]">${escapeHtml(tastes.join(" / ") || "家常")}</span>
+            </div>
+            <div class="flex items-start justify-between gap-4 pt-2 p2-type-row-meta text-white/65">
+              <span>生成方向</span>
+              <span class="whitespace-nowrap text-right">${escapeHtml((result && result.title) || "成品摆盘")}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMetricChip(container, icon, label) {
+      if (!container) {
+        return;
+      }
+
+      container.innerHTML = `
+        <span class="material-symbols-outlined text-accent p2-type-icon-lg">${escapeHtml(icon)}</span>
+        ${escapeHtml(label)}
+      `;
+    }
+
+    function renderSteps(result) {
+      const steps = Array.isArray(result && result.steps) ? result.steps : [];
+      if (!stepsPanel || !steps.length) {
+        return;
+      }
+
+      stepsPanel.innerHTML = steps.map((step, index) => {
+        const chips = buildStepChips(step, index);
+        return `
+          <article class="recipe-step-row${index === 0 ? " is-active" : ""}">
+            <div class="recipe-step-marker" aria-hidden="true"></div>
+            <div class="recipe-step-content min-w-0 flex-1">
+              <p class="recipe-step-overline">步骤 ${String(index + 1).padStart(2, "0")}</p>
+              <h4 class="recipe-step-title">${escapeHtml(step && step.title || ("步骤 " + (index + 1)))}</h4>
+              <div class="recipe-step-chips">
+                ${chips.map((chip) => `
+                  <span class="recipe-step-chip"><strong>${escapeHtml(chip.strong)}</strong><span>${escapeHtml(chip.label)}</span></span>
+                `).join("")}
+              </div>
+              <p class="recipe-step-copy">${escapeHtml(step && step.instruction || step && step.tips || "按当前生成建议完成即可。")}</p>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderResult(result) {
+      if (!result) {
+        return;
+      }
+
+      const title = result.title || (result.recipe && (result.recipe.title_zh || result.recipe.title)) || "生成结果";
+      const summary = result.summary || (result.recipe && result.recipe.description) || "这道成品已经准备好进入结果页。";
+
+      if (titleNode) {
+        titleNode.textContent = title;
+      }
+
+      if (summaryNode) {
+        summaryNode.textContent = summary;
+      }
+
+      renderMetricChip(metricChips[0], "schedule", formatDuration(result));
+      renderMetricChip(metricChips[1], "local_fire_department", formatTechnique(result));
+
+      if (stepSummaryNode) {
+        stepSummaryNode.textContent =
+          (result.recipe && result.recipe.tips) ||
+          "生成结果已经写入主链路，按步骤操作即可落盘。";
+      }
+
+      textFallback.innerHTML = buildFallbackHtml(result);
+      renderSteps(result);
+    }
+
+    function setActiveStep(index) {
+      recipeStepRows.forEach((row, rowIndex) => {
+        row.classList.toggle("is-active", rowIndex === index);
+      });
+    }
+
+    function updateStepChipLayout() {
+      recipeStepRows.forEach((row) => {
+        const chipGroup = row.querySelector(".recipe-step-chips");
+        if (!chipGroup) {
+          return;
+        }
+
+        row.classList.remove("is-compact");
+
+        const needsCompact = chipGroup.scrollWidth > chipGroup.clientWidth + 2;
+        row.classList.toggle("is-compact", needsCompact);
+      });
+    }
+
+    function updateActiveStepByScroll() {
+      if (!recipeStepRows.length) {
+        return;
+      }
+
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+      const anchorY = viewportHeight * 0.5;
+      const pageBottom = window.scrollY + viewportHeight;
+      const pageHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
+
+      if (pageHeight - pageBottom <= 12) {
+        setActiveStep(recipeStepRows.length - 1);
+        return;
+      }
+
+      let activeIndex = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      recipeStepRows.forEach((row, index) => {
+        const marker = row.querySelector(".recipe-step-marker");
+        const rect = (marker || row).getBoundingClientRect();
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.abs(centerY - anchorY);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          activeIndex = index;
+        }
+      });
+
+      setActiveStep(activeIndex);
+    }
+
+    function showFallback() {
+      heroImage.hidden = true;
+      textFallback.hidden = false;
+      resultCopyBlock.style.marginTop = "0";
+    }
+
+    function updateResultButtonState(saved, saving) {
+      if (!saveButton) {
+        return;
+      }
+
+      const label = saveButton.querySelector("span:not(.material-symbols-outlined)");
+      const icon = saveButton.querySelector(".material-symbols-outlined");
+
+      if (label) {
+        if (saving) {
+          label.textContent = "保存中...";
+        } else {
+          label.textContent = saved ? "已保存到档案馆" : "保存到档案馆";
+        }
+      }
+
+      if (icon) {
+        icon.textContent = saving ? "progress_activity" : (saved ? "check" : "bookmark");
+      }
+
+      saveButton.style.background = saved
+        ? "linear-gradient(180deg, rgba(100, 185, 156, 0.98), rgba(35, 83, 71, 0.98))"
+        : "";
+      saveButton.style.boxShadow = saved
+        ? "0 18px 36px rgba(35, 83, 71, 0.32)"
+        : "";
+      saveButton.disabled = Boolean(saving);
+    }
+
+    async function handleArchiveSave(event) {
+      if (!saveButton || !bridge) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+      }
+
+      if (saveButton.dataset.archiveSaving === "true") {
+        return;
+      }
+
+      if (saveButton.dataset.archiveSaved === "true") {
+        return;
+      }
+
+      const currentResult = bridge.readGenerationResult(window);
+      if (!currentResult) {
+        window.alert("当前还没有可保存的生成结果。");
+        return;
+      }
+
+      saveButton.dataset.archiveSaving = "true";
+      updateResultButtonState(false, true);
+
+      try {
+        const payload = {
+          user_id: bridge.getUserId(window),
+          title: currentResult.title || (currentResult.recipe && (currentResult.recipe.title_zh || currentResult.recipe.title)) || "生成结果",
+          recipe_id: currentResult.recipe_id || (currentResult.recipe && currentResult.recipe.id) || null,
+          generation_log_id: currentResult.generation_log_id || null,
+          cover_image_url: currentResult.imageUrl || currentResult.boardPreview || "",
+          is_shared: false,
+          profile_constraints: selection && selection.profileConstraints
+            ? selection.profileConstraints.generationConstraints || {}
+            : {}
+        };
+
+        await bridge.fetchJson(bridge.buildApiUrl("/api/v1/archives", window), {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        saveButton.dataset.archiveSaved = "true";
+        incrementLocalCounter(SAVED_ARCHIVE_COUNT_KEY);
+        updateResultButtonState(true, false);
+        window.requestAnimationFrame(() => updateResultButtonState(true, false));
+        window.setTimeout(() => updateResultButtonState(true, false), 240);
+      } catch (error) {
+        console.error("archive-save-failed", error);
+        updateResultButtonState(false, false);
+        window.alert(error && error.message ? error.message : "保存到档案馆失败，请稍后重试。");
+      } finally {
+        saveButton.dataset.archiveSaving = "false";
+      }
+    }
+
+    renderResult(generatedResult);
+    const previewSrc = resolvePreviewSrc(generatedResult);
+
+    heroImage.addEventListener("load", () => {
+      heroImage.hidden = false;
+      textFallback.hidden = true;
+      resultCopyBlock.style.marginTop = "-0.75rem";
+    }, { once: true });
+
+    heroImage.addEventListener("error", showFallback, { once: true });
+
+    if (previewSrc) {
+      heroImage.src = previewSrc;
+    } else {
+      showFallback();
+    }
+
+    if (saveButton) {
+      updateResultButtonState(saveButton.dataset.archiveSaved === "true", false);
+      saveButton.addEventListener("click", handleArchiveSave, true);
+    }
+
+    recipeStepRows = Array.from(document.querySelectorAll(".recipe-step-row"));
+    if (recipeStepRows.length) {
+      if (resultScroller && resultScroller.scrollHeight > resultScroller.clientHeight) {
+        resultScroller.addEventListener("scroll", updateActiveStepByScroll, { passive: true });
+      }
+      window.addEventListener("scroll", updateActiveStepByScroll, { passive: true });
+      window.addEventListener("resize", () => {
+        updateStepChipLayout();
+        updateActiveStepByScroll();
+      });
+      requestAnimationFrame(() => {
+        updateStepChipLayout();
+        updateActiveStepByScroll();
+      });
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          updateStepChipLayout();
+          updateActiveStepByScroll();
+        });
+      }
+    }
+  })();
+</script>
+</body></html>
+
+

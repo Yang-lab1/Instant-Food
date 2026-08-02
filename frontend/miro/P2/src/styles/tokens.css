@@ -1,0 +1,245 @@
+:root {
+  color-scheme: dark;
+  --miro-bg: #070909;
+  --miro-surface: rgba(18, 18, 20, 0.9);
+  --miro-surface-soft: rgba(24, 24, 26, 0.78);
+  --miro-line: rgba(255, 255, 255, 0.08);
+  --miro-text: #f7f7f3;
+  --miro-muted: rgba(247, 247, 243, 0.68);
+  --miro-accent: #235347;
+  --miro-accent-soft: #8eb69b;
+  --miro-radius-xl: 32px;
+  --miro-radius-lg: 24px;
+  --miro-radius-md: 18px;
+  --miro-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+  --miro-page-bg:
+    radial-gradient(circle at 16% 9%, rgba(35, 83, 71, 0.36) 0, rgba(35, 83, 71, 0) 32%),
+    radial-gradient(circle at 84% 14%, rgba(142, 182, 155, 0.18) 0, rgba(142, 182, 155, 0) 30%),
+    radial-gradient(circle at 48% 96%, rgba(35, 83, 71, 0.16) 0, rgba(35, 83, 71, 0) 38%),
+    linear-gradient(180deg, #050505 0%, #000 100%);
+  --miro-device-bg: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000;
+  --miro-device-border: rgba(255, 255, 255, 0.06);
+  --miro-device-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --miro-surface-card:
+    linear-gradient(160deg, rgba(142, 182, 155, 0.13), rgba(255, 255, 255, 0.035) 30%, rgba(255, 255, 255, 0.01)),
+    linear-gradient(180deg, rgba(18, 18, 20, 0.95), rgba(8, 8, 8, 0.99));
+  --miro-surface-panel:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(21, 21, 22, 0.96), rgba(8, 8, 8, 0.98));
+  --miro-surface-dock:
+    linear-gradient(180deg, rgba(35, 83, 71, 0.18), rgba(6, 6, 6, 0.9));
+  --miro-surface-chip:
+    linear-gradient(180deg, rgba(142, 182, 155, 0.12), rgba(255, 255, 255, 0.04));
+  --miro-surface-chip-active:
+    linear-gradient(180deg, rgba(55, 118, 101, 0.96), rgba(35, 83, 71, 0.98));
+  --miro-surface-cta:
+    linear-gradient(135deg, rgba(142, 182, 155, 0.94), rgba(35, 83, 71, 0.98));
+  --miro-line-strong: rgba(142, 182, 155, 0.22);
+  --miro-line-soft: rgba(255, 255, 255, 0.08);
+  --miro-shadow-card:
+    0 22px 44px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 0 1px rgba(142, 182, 155, 0.06);
+  --miro-shadow-soft:
+    0 18px 36px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --miro-shadow-dock:
+    0 18px 36px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --miro-blur-surface: 18px;
+  --miro-blur-dock: 28px;
+  --miro-space-2: 8px;
+  --miro-space-3: 12px;
+  --miro-space-4: 16px;
+  --miro-space-5: 20px;
+  --miro-space-6: 24px;
+  --miro-space-7: 32px;
+  --miro-page-gutter: 20px;
+  --miro-page-gutter-sm: 16px;
+  --miro-card-gap: 12px;
+  --miro-section-gap: 24px;
+  --miro-radius-device: 40px;
+  --miro-radius-card: 28px;
+  --miro-radius-panel: 24px;
+  --miro-radius-control: 20px;
+  --miro-radius-icon: 16px;
+  --miro-radius-nav-icon: 12px;
+  --miro-radius-pill: 999px;
+  --miro-dock-bottom: 8px;
+  --miro-dock-x: 20px;
+  --miro-dock-padding: 10px 8px 8px;
+  --miro-dock-radius: 28px;
+  --miro-nav-icon-size: 36px;
+  --miro-plus-size: 52px;
+  --miro-icon-button-size: 44px;
+  --miro-cta-height: 56px;
+  --miro-motion-fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  --miro-motion-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  --miro-font-display: "SF Pro Display", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --miro-font-body: "SF Pro Text", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --miro-font-serif-display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STZhongsong", serif;
+  --miro-font-icon: "Material Symbols Outlined";
+  --miro-font-weight-regular: 400;
+  --miro-font-weight-medium: 500;
+  --miro-font-weight-semibold: 600;
+  --miro-font-weight-display-semibold: 620;
+  --miro-font-weight-strong: 650;
+  --miro-font-weight-display-strong: 660;
+  --miro-font-weight-display-heavy: 670;
+  --miro-font-weight-display-extra: 680;
+  --miro-font-weight-bold: 700;
+  --miro-font-weight-heavy: 800;
+  --miro-type-nav-label-size: 10.5px;
+  --miro-type-nav-label-line: 12px;
+  --miro-type-hidden-size: 0;
+  --miro-type-hidden-line: 1;
+  --miro-type-status-size: 12px;
+  --miro-type-status-line: 16px;
+  --miro-type-tight-line: 1;
+  --miro-type-helper-line: 1.5;
+  --miro-type-kicker-size: 11px;
+  --miro-type-kicker-line: 14px;
+  --miro-type-cat-label-size: 11px;
+  --miro-type-cat-label-line: 1.24;
+  --miro-type-page-title-size: 17px;
+  --miro-type-page-title-line: 1;
+  --miro-type-section-title-size: 12px;
+  --miro-type-section-title-line: 16px;
+  --miro-type-row-title-size: 16px;
+  --miro-type-row-title-line: 20px;
+  --miro-type-row-meta-size: 12px;
+  --miro-type-row-meta-line: 16px;
+  --miro-type-chip-size: 12px;
+  --miro-type-chip-line: 16px;
+  --miro-type-chip-sm-size: 11px;
+  --miro-type-chip-sm-line: 1;
+  --miro-type-chip-xs-size: 9.5px;
+  --miro-type-chip-xs-line: 1;
+  --miro-type-chip-lg-size: 15px;
+  --miro-type-chip-lg-line: 18px;
+  --miro-type-control-size: 14px;
+  --miro-type-control-line: 18px;
+  --miro-type-control-sm-size: 13px;
+  --miro-type-control-sm-line: 16px;
+  --miro-type-control-tall-line: 32px;
+  --miro-type-login-button-size: 16px;
+  --miro-type-login-button-line: 1;
+  --miro-type-mode-size: 16px;
+  --miro-type-mode-line: 20px;
+  --miro-type-caption-size: 13px;
+  --miro-type-caption-line: 20px;
+  --miro-type-caption-tight-size: 13px;
+  --miro-type-caption-tight-line: 18px;
+  --miro-type-copy-size: 13px;
+  --miro-type-copy-line: 1.58;
+  --miro-type-copy-loose-line: 1.68;
+  --miro-type-copy-xl-line: 1.7;
+  --miro-type-agreement-size: 13px;
+  --miro-type-agreement-line: 1.72;
+  --miro-type-cta-size: 17px;
+  --miro-type-cta-line: 20px;
+  --miro-type-tab-size: 15px;
+  --miro-type-tab-line: 18px;
+  --miro-type-card-title-size: 22px;
+  --miro-type-card-title-line: 28px;
+  --miro-type-empty-title-size: 22px;
+  --miro-type-empty-title-line: 1.1;
+  --miro-type-card-mini-title-size: 14px;
+  --miro-type-card-mini-title-line: 1.18;
+  --miro-type-section-heading-size: 20px;
+  --miro-type-section-heading-line: 1.06;
+  --miro-type-community-card-title-size: 23px;
+  --miro-type-community-card-title-line: 1.04;
+  --miro-type-detail-hero-title-size: 28px;
+  --miro-type-detail-hero-title-line: 1.02;
+  --miro-type-decision-title-size: 20px;
+  --miro-type-decision-title-line: 1.15;
+  --miro-type-price-size: 24px;
+  --miro-type-price-line: 1;
+  --miro-type-detail-small-size: 10px;
+  --miro-type-detail-small-line: 14px;
+  --miro-type-time-size: 11px;
+  --miro-type-time-line: 1.18;
+  --miro-type-panel-title-size: 24px;
+  --miro-type-panel-title-line: 30px;
+  --miro-type-recipe-title-size: 19px;
+  --miro-type-recipe-title-line: 23px;
+  --miro-type-hero-title-size: 30px;
+  --miro-type-hero-title-line: 1.08;
+  --miro-type-brand-size: 18px;
+  --miro-type-brand-line: 1;
+  --miro-type-body-size: 15px;
+  --miro-type-body-line: 26px;
+  --miro-type-body-sm-size: 14px;
+  --miro-type-body-sm-line: 24px;
+  --miro-type-profile-name-size: 24px;
+  --miro-type-profile-name-line: 28px;
+  --miro-type-kpi-size: 26px;
+  --miro-type-kpi-line: 1;
+  --miro-type-balance-size: 42px;
+  --miro-type-balance-line: 1;
+  --miro-type-balance-prefix-size: 20px;
+  --miro-type-sub-amount-size: 48px;
+  --miro-type-sub-amount-line: 1;
+  --miro-type-icon-size: 24px;
+  --miro-type-icon-line: 1;
+  --miro-type-icon-sm-size: 14px;
+  --miro-type-icon-sm-line: 16px;
+  --miro-type-icon-lg-size: 18px;
+  --miro-type-icon-lg-line: 20px;
+  --miro-type-icon-button-size: 22px;
+  --miro-type-icon-button-line: 24px;
+  --miro-type-icon-row-size: 19px;
+  --miro-type-icon-chevron-size: 20px;
+  --miro-type-size-9: 9px;
+  --miro-type-size-10: 10px;
+  --miro-type-size-10-5: 10.5px;
+  --miro-type-size-11: 11px;
+  --miro-type-size-12: 12px;
+  --miro-type-size-13: 13px;
+  --miro-type-size-14: 14px;
+  --miro-type-size-15: 15px;
+  --miro-type-size-16: 16px;
+  --miro-type-size-17: 17px;
+  --miro-type-size-18: 18px;
+  --miro-type-size-19: 19px;
+  --miro-type-size-20: 20px;
+  --miro-type-size-22: 22px;
+  --miro-type-size-24: 24px;
+  --miro-type-size-28: 28px;
+  --miro-type-size-30: 30px;
+  --miro-type-size-36: 36px;
+  --miro-type-size-46: 46px;
+  --miro-type-size-58: 58px;
+  --miro-type-size-onboarding-hero: clamp(4rem, 16vw, 4.9rem);
+  --miro-type-size-onboarding-hero-compact: clamp(3.6rem, 15vw, 4.3rem);
+  --miro-type-size-onboarding-main: clamp(1.8rem, 6.7vw, 2.2rem);
+  --miro-type-size-onboarding-main-compact: clamp(1.6rem, 6vw, 1.95rem);
+  --miro-type-size-onboarding-sub: 0.84rem;
+  --miro-type-size-onboarding-sub-compact: 0.74rem;
+  --miro-type-size-onboarding-knob: 0.88rem;
+  --miro-type-size-onboarding-knob-compact: 0.8rem;
+  --miro-type-size-onboarding-label: 0.62rem;
+  --miro-type-line-0-92: 0.92;
+  --miro-type-line-1: 1;
+  --miro-type-line-1-08: 1.08;
+  --miro-type-line-1-24: 1.24;
+  --miro-type-line-1-65: 1.65;
+  --miro-type-line-12: 12px;
+  --miro-type-line-13: 13px;
+  --miro-type-line-14: 14px;
+  --miro-type-line-15: 15px;
+  --miro-type-line-16: 16px;
+  --miro-type-line-17: 17px;
+  --miro-type-line-18: 18px;
+  --miro-type-line-20: 20px;
+  --miro-type-line-22: 22px;
+  --miro-type-line-23: 23px;
+  --miro-type-line-24: 24px;
+  --miro-type-line-26: 26px;
+  --miro-type-line-28: 28px;
+  --miro-type-line-32: 32px;
+  --miro-type-line-42: 42px;
+}

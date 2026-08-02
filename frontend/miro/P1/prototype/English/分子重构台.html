@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Identify and Refine Ingredients</title><script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script><script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { primary: '#00E5FF', accent: '#235347', 'accent-light': '#8EB69B', 'background-dark': '#000000', 'surface-dark': '#050505', 'text-dark': '#FFFFFF', 'text-muted-dark': '#8E8E93', 'border-dark': 'rgba(255,255,255,0.1)' }, fontFamily: { display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'], body: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'] }, borderRadius: { 'DEFAULT': '2rem', 'sm': '1rem', 'md': '1.5rem', 'lg': '2rem', 'xl': '2.5rem', '2xl': '3rem' } } } };</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>.liquid-glass { background: rgba(28, 28, 30, 0.5); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 0.5px solid rgba(255, 255, 255, 0.12); color: #FFFFFF; border-radius: 2rem; } body { min-height: max(884px, 100dvh); }</style><style data-nexus-shell>
+  html, body {
+    margin: 0;
+    min-height: 100%;
+  }
+  body.nexus-shell-body {
+    display: flex !important;
+    justify-content: center;
+    align-items: flex-start !important;
+    padding: 20px;
+    overflow: auto !important;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(35, 83, 71, 0.34) 0%, rgba(35, 83, 71, 0) 28%),
+      radial-gradient(circle at 82% 14%, rgba(142, 182, 155, 0.14) 0%, rgba(142, 182, 155, 0) 22%),
+      radial-gradient(circle at 50% 100%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 36%),
+      linear-gradient(180deg, #050505 0%, #000000 100%) !important;
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .nexus-shell-device {
+    position: relative;
+    width: min(100%, 414px);
+    min-height: calc(100vh - 40px);
+    border-radius: 40px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000000;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    isolation: isolate;
+  }
+  .nexus-shell-device::before,
+  .nexus-shell-device::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nexus-shell-device::before {
+    width: 220px;
+    height: 220px;
+    top: 72px;
+    right: -52px;
+    background: rgba(35, 83, 71, 0.24);
+  }
+  .nexus-shell-device::after {
+    width: 250px;
+    height: 250px;
+    bottom: 132px;
+    left: -96px;
+    background: rgba(142, 182, 155, 0.1);
+  }
+  .nexus-shell-screen {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+  }
+  .nexus-shell-screen > * {
+    position: relative;
+    z-index: 1;
+  }
+  .nexus-shell-device .fixed.bottom-0.left-0.w-full,
+  .nexus-shell-device .fixed.bottom-0.w-full {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+  }
+  .nexus-shell-device nav.bottom-dock {
+    position: absolute !important;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 20;
+  }
+  .nexus-shell-device main {
+    max-width: 100% !important;
+  }
+  @media (max-width: 480px) {
+    body.nexus-shell-body {
+      padding: 0;
+    }
+    .nexus-shell-device {
+      width: 100%;
+      min-height: 100dvh;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .nexus-shell-device nav.bottom-dock {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+    }
+  }
+</style>
+</head>
+<body class="bg-[#000000] text-text-dark font-body min-h-screen pb-24 selection:bg-primary selection:text-white antialiased nexus-shell-body">
+<div class='nexus-shell-device'><div class='nexus-shell-screen'>
+<div class="h-12 w-full flex items-center justify-between px-6 text-xs font-semibold">
+<span>9:41</span>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[16px]">signal_cellular_4_bar</span>
+</div>
+</div>
+<header class="px-6 py-4 flex items-center justify-between">
+<button class="w-10 h-10 liquid-glass flex items-center justify-center transition-transform active:scale-95 rounded-xl"><span class="material-symbols-outlined">arrow_back</span></button>
+<h1 class="font-body font-semibold text-[17px] tracking-tight text-white">Refine Ingredients</h1>
+<button class="w-10 h-10 liquid-glass flex items-center justify-center transition-transform active:scale-95 rounded-xl"><span class="material-symbols-outlined text-primary" style="color: #235347;">more_horiz</span></button>
+</header>
+<main class="px-6 space-y-8">
+<div class="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-border-dark">
+<img alt="Beautifully plated roasted chicken with herbs and tomatoes" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSekwk9S1EzjyTBu6cLlWtZ5wC4Ccu1IJ3A5FJ5_D-9QOotb5dnlOmLU1g7r2a1s48_NamDNznDxdrNOagWbwA-feRzR55DicJR98tTy9TabCL8cFfu9PCEhENUl0-yqeiASBKwn49hHechconjEEibzSGGRzR5kDr8g6FNJTjZ29fXWAOi7Q3BmOINICm_38EbLxI8u1We6WRveiIiHJfbxr5rXP7l_K-AKD3rgo0zbdqTPeHSigJfXGEvilT1Voj9iNBv4X0cs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+<div class="absolute top-1/4 left-1/4 liquid-glass px-3 py-1.5 flex items-center space-x-2 animate-pulse rounded-2xl">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(255,149,0,0.8)]" style="background-color: #8EB69B; box-shadow: 0 0 10px rgba(142, 182, 155, 0.6);"></span>
+<span class="font-body text-[15px] font-medium tracking-tight">Chicken Breast</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="color: #235347;">check_circle</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 liquid-glass px-3 py-1.5 flex items-center space-x-2 rounded-2xl">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(255,149,0,0.8)]" style="background-color: #8EB69B; box-shadow: 0 0 10px rgba(142, 182, 155, 0.6);"></span>
+<span class="font-body text-[15px] font-medium tracking-tight">Cherry Tomatoes</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="color: #235347;">check_circle</span>
+</div>
+<div class="absolute bottom-1/4 left-1/5 liquid-glass px-3 py-1.5 flex items-center space-x-2 rounded-2xl">
+<span class="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]" style="background-color: #5A7D69; box-shadow: 0 0 10px rgba(90, 125, 105, 0.6);"></span>
+<span class="font-body text-[15px] font-medium tracking-tight">Rosemary</span>
+<span class="material-symbols-outlined text-[16px]" style="color: #235347;">cancel</span>
+</div>
+</div>
+<div class="text-center px-4">
+<h2 class="font-display text-[34px] font-bold mb-2 text-white tracking-tight">Behold, the Harvest</h2>
+<p class="font-body text-[17px] text-text-muted-dark leading-relaxed tracking-tight">
+                My omniscient eye has identified these humble offerings. Please confirm before we attempt to elevate them.
+            </p>
+</div>
+<div class="space-y-6">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-body text-[13px] font-semibold uppercase tracking-wider text-text-muted-dark text-[17px] font-semibold normal-case text-white">Technique Override</h3>
+<span class="material-symbols-outlined text-text-muted-dark text-[18px]">restaurant</span>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2.5 liquid-glass font-body text-[15px] font-medium tracking-tight transition-all hover:border-primary focus:border-primary active:scale-95 rounded-xl">
+                        Braise
+                    </button>
+<button class="px-5 py-2.5 bg-primary text-white font-body text-[15px] font-medium tracking-tight transition-all shadow-[0_0_15px_rgba(255,149,0,0.5)] active:scale-95 border border-primary rounded-xl" style="background-color: #235347; border-color: #235347; box-shadow: 0 4px 12px rgba(35, 83, 71, 0.4);">
+                        Roast
+                    </button>
+<button class="px-5 py-2.5 liquid-glass font-body text-[15px] font-medium tracking-tight transition-all hover:border-primary focus:border-primary active:scale-95 rounded-xl">
+                        Sous Vide
+                    </button>
+<button class="px-5 py-2.5 liquid-glass font-body text-[15px] font-medium tracking-tight transition-all hover:border-primary focus:border-primary active:scale-95 flex items-center space-x-1 rounded-xl">
+<span>More</span>
+<span class="material-symbols-outlined text-text-muted-dark text-[18px]">restaurant</span>
+</button>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-body text-[13px] font-semibold uppercase tracking-wider text-text-muted-dark text-[17px] font-semibold normal-case text-white">Desired Aura</h3>
+<span class="material-symbols-outlined text-text-muted-dark text-[18px]">local_fire_department</span>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2.5 liquid-glass font-body text-[15px] font-medium tracking-tight transition-all hover:border-primary focus:border-primary active:scale-95 rounded-xl">
+                        Umami Bomb
+                    </button>
+<button class="px-5 py-2.5 liquid-glass font-body text-[15px] font-medium tracking-tight transition-all hover:border-primary focus:border-primary active:scale-95 rounded-xl">
+                        Herbaceous
+                    </button>
+<button class="px-5 py-2.5 bg-surface-dark text-white border border-border-dark font-body text-[15px] font-medium tracking-tight transition-all active:scale-95 flex items-center space-x-2 rounded-xl">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+<span>AI Suggestion</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black via-black/95 to-transparent pt-12">
+<button class="w-full py-4 rounded-xl text-white font-body font-semibold text-[17px] transition-transform active:scale-95 flex items-center justify-center space-x-2 tracking-tight" style="background-color: #235347; box-shadow: 0 10px 30px rgba(35, 83, 71, 0.4);">
+<span>Commence Creation</span>
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+</button>
+<div class="w-1/3 h-1 bg-white rounded-full mx-auto mt-6 opacity-40"></div>
+</div>
+</div></div>
+</body></html>
+

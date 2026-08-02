@@ -1,0 +1,265 @@
+.miro-app-shell {
+  width: min(100%, 960px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 24px 16px 108px;
+}
+
+.miro-app-shell[data-show-top-bar="false"] .miro-top-bar {
+  display: none;
+}
+
+.miro-app-shell[data-show-bottom-nav="false"] {
+  padding-bottom: 24px;
+}
+
+.miro-app-shell[data-show-bottom-nav="false"] .miro-bottom-nav {
+  display: none;
+}
+
+.miro-app-shell[data-layout="immersive"] {
+  width: 100%;
+  max-width: none;
+  padding: 20px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.miro-app-shell[data-layout="immersive"] .miro-app-content {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.miro-app-shell[data-layout="runtime"] {
+  width: 100%;
+  max-width: none;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.miro-app-shell[data-layout="runtime"] .miro-app-content {
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.miro-top-bar,
+.miro-bottom-nav,
+.miro-page,
+.miro-section-card,
+.miro-empty-state {
+  border: 1px solid var(--miro-line);
+  background: var(--miro-surface);
+  box-shadow: var(--miro-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.miro-top-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-radius: var(--miro-radius-lg);
+}
+
+.miro-top-bar__brand,
+.miro-top-bar__meta {
+  display: grid;
+  gap: 6px;
+}
+
+.miro-top-bar__eyebrow,
+.miro-page__eyebrow {
+  color: var(--miro-accent-soft);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.miro-top-bar__description,
+.miro-page__description,
+.miro-section-card p,
+.miro-empty-state p {
+  color: var(--miro-muted);
+}
+
+.miro-app-content {
+  padding: 20px 0;
+}
+
+.miro-page {
+  padding: 24px;
+  border-radius: var(--miro-radius-xl);
+}
+
+.miro-page__header {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.miro-page__title {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 40px);
+}
+
+.miro-chip-row,
+.miro-section-grid,
+.miro-bottom-nav {
+  display: grid;
+  gap: 12px;
+}
+
+.miro-chip-row {
+  grid-template-columns: repeat(auto-fit, minmax(140px, max-content));
+  margin-bottom: 20px;
+}
+
+.miro-chip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--miro-surface-soft);
+  border: 1px solid var(--miro-line);
+  color: var(--miro-muted);
+}
+
+.miro-section-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.miro-section-card,
+.miro-empty-state {
+  padding: 18px;
+  border-radius: var(--miro-radius-lg);
+}
+
+.miro-section-card h3,
+.miro-empty-state strong {
+  margin: 0 0 10px;
+}
+
+.miro-section-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--miro-muted);
+}
+
+.miro-bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: min(calc(100% - 32px), 960px);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 12px;
+  border-radius: 999px;
+}
+
+.miro-bottom-nav__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: var(--miro-muted);
+}
+
+.miro-bottom-nav__item.is-active {
+  background: rgba(35, 83, 71, 0.72);
+  color: var(--miro-text);
+}
+
+.miro-icon {
+  width: 18px;
+  text-align: center;
+}
+
+.overlay-host {
+  display: none;
+}
+
+.legacy-inline-page {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+}
+
+.miro-device-shell {
+  position: relative;
+  width: min(100%, 414px);
+  min-height: calc(100dvh - 40px);
+  border-radius: 40px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000000;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  isolation: isolate;
+}
+
+.miro-device-shell::before,
+.miro-device-shell::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.miro-device-shell::before {
+  width: 220px;
+  height: 220px;
+  top: 72px;
+  right: -52px;
+  background: rgba(35, 83, 71, 0.24);
+}
+
+.miro-device-shell::after {
+  width: 250px;
+  height: 250px;
+  bottom: 132px;
+  left: -96px;
+  background: rgba(142, 182, 155, 0.1);
+}
+
+.miro-device-screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+}
+
+.miro-device-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 720px) {
+  .miro-top-bar {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .miro-bottom-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .miro-app-shell[data-layout="immersive"] {
+    padding: 0;
+  }
+
+  .miro-device-shell {
+    width: 100%;
+    min-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+}

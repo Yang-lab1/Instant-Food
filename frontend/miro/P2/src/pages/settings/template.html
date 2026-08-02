@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>拍立食 | 我的</title>
+  <link href="wechat-unified.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --settings-bg: #000000;
+      --settings-surface: rgba(255, 255, 255, 0.045);
+      --settings-surface-strong: rgba(18, 18, 20, 0.92);
+      --settings-line: rgba(255, 255, 255, 0.09);
+      --settings-line-soft: rgba(255, 255, 255, 0.055);
+      --settings-text: #ffffff;
+      --settings-muted: rgba(255, 255, 255, 0.52);
+      --settings-soft: rgba(255, 255, 255, 0.72);
+      --settings-primary: #235347;
+      --settings-accent: #8EB69B;
+      --settings-warm: #d7b36a;
+      --font-display: var(--miro-font-display);
+      --font-body: var(--miro-font-body);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: var(--font-body);
+    }
+
+    body.nexus-shell-body {
+      display: flex !important;
+      justify-content: center;
+      align-items: flex-start !important;
+      padding: 20px;
+      overflow: auto !important;
+      background:
+        radial-gradient(circle at 15% 8%, rgba(35, 83, 71, 0.34) 0%, rgba(35, 83, 71, 0) 30%),
+        radial-gradient(circle at 86% 10%, rgba(142, 182, 155, 0.14) 0%, rgba(142, 182, 155, 0) 24%),
+        radial-gradient(circle at 50% 100%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 34%),
+        linear-gradient(180deg, #050505 0%, #000000 100%) !important;
+      color: var(--settings-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .material-symbols-outlined {
+      font-family: var(--miro-font-icon);
+      font-weight: var(--miro-font-weight-regular);
+      font-style: normal;
+      font-size: var(--miro-type-icon-size);
+      line-height: var(--miro-type-icon-line);
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+
+    .nexus-shell-device {
+      position: relative;
+      width: min(100%, 414px);
+      height: min(calc(100vh - 40px), 844px);
+      max-height: min(calc(100vh - 40px), 844px);
+      border-radius: 40px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(28, 28, 30, 0.92) 0%, rgba(0, 0, 0, 0.98) 100%), #000;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      isolation: isolate;
+    }
+
+    .nexus-shell-device::before,
+    .nexus-shell-device::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(72px);
+      z-index: 0;
+    }
+
+    .nexus-shell-device::before {
+      width: 220px;
+      height: 220px;
+      top: 72px;
+      right: -70px;
+      background: rgba(35, 83, 71, 0.24);
+    }
+
+    .nexus-shell-device::after {
+      width: 250px;
+      height: 250px;
+      bottom: 132px;
+      left: -96px;
+      background: rgba(142, 182, 155, 0.1);
+    }
+
+    .nexus-shell-screen {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    .nexus-shell-screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    .settings-topbar {
+      height: 72px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.92) 20%, rgba(0, 0, 0, 0.62) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+    }
+
+    .settings-topbar h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: var(--miro-type-page-title-size);
+      line-height: var(--miro-type-page-title-line);
+      font-weight: var(--miro-font-weight-heavy);
+      letter-spacing: -0.02em;
+      color: var(--settings-text);
+    }
+
+    .settings-icon-button {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+        rgba(12, 12, 12, 0.8);
+      color: var(--settings-text);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .settings-icon-button .material-symbols-outlined {
+      width: 24px;
+      height: 24px;
+      font-size: var(--miro-type-icon-button-size);
+      line-height: var(--miro-type-icon-button-line);
+    }
+
+    .settings-main {
+      padding: 8px 20px 36px;
+    }
+
+    .settings-profile {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0 20px;
+    }
+
+    .settings-profile-left {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .settings-avatar-button {
+      width: 70px;
+      height: 70px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .settings-avatar-shell {
+      width: 70px;
+      height: 70px;
+      display: block;
+      border-radius: 999px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 42% 28%, rgba(142, 182, 155, 0.34), rgba(142, 182, 155, 0) 42%),
+        linear-gradient(135deg, rgba(35, 83, 71, 0.66), rgba(15, 15, 16, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-avatar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .settings-avatar[hidden],
+    .settings-avatar-placeholder[hidden] {
+      display: none;
+    }
+
+    .settings-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .settings-avatar-placeholder .material-symbols-outlined {
+      font-size: var(--miro-type-kpi-size);
+    }
+
+    .settings-name-wrap {
+      min-width: 0;
+    }
+
+    .settings-name-button {
+      display: block;
+      max-width: 190px;
+      margin: 0 0 7px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--settings-text);
+      font-family: var(--font-display);
+      font-size: var(--miro-type-profile-name-size);
+      line-height: var(--miro-type-profile-name-line);
+      font-weight: var(--miro-font-weight-heavy);
+      letter-spacing: -0.04em;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .settings-name-button.is-placeholder {
+      color: rgba(255, 255, 255, 0.54);
+      font-weight: var(--miro-font-weight-bold);
+      letter-spacing: -0.02em;
+    }
+
+    .settings-member-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 22px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(35, 83, 71, 0.28);
+      border: 1px solid rgba(142, 182, 155, 0.18);
+      color: rgba(142, 182, 155, 0.94);
+      font-size: var(--miro-type-chip-size);
+      line-height: var(--miro-type-chip-line);
+      font-weight: var(--miro-font-weight-semibold);
+    }
+
+    .settings-profile-action {
+      min-width: 78px;
+      height: 34px;
+      border: 1px solid rgba(142, 182, 155, 0.18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.045);
+      color: rgba(255, 255, 255, 0.84);
+      font-size: var(--miro-type-chip-size);
+      line-height: var(--miro-type-chip-line);
+      font-weight: var(--miro-font-weight-semibold);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    }
+
+    .settings-balance-card {
+      position: relative;
+      min-height: 138px;
+      overflow: hidden;
+      border-radius: 30px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 90% 40%, rgba(142, 182, 155, 0.22) 0%, rgba(142, 182, 155, 0) 34%),
+        linear-gradient(135deg, rgba(40, 92, 77, 0.96) 0%, rgba(18, 18, 20, 0.96) 62%, rgba(8, 8, 9, 0.98) 100%);
+      border: 1px solid rgba(142, 182, 155, 0.18);
+      color: #ffffff;
+      box-shadow: 0 20px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    }
+
+    .settings-balance-card::after {
+      content: "";
+      position: absolute;
+      right: -46px;
+      bottom: -54px;
+      width: 172px;
+      height: 172px;
+      border-radius: 999px;
+      background: rgba(142, 182, 155, 0.12);
+    }
+
+    .settings-balance-title {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: var(--miro-type-control-size);
+      line-height: var(--miro-type-control-line);
+      font-weight: var(--miro-font-weight-semibold);
+    }
+
+    .settings-balance-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .settings-balance-amount {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      font-family: var(--font-display);
+      font-weight: var(--miro-font-weight-heavy);
+    }
+
+    .settings-balance-amount small {
+      font-size: var(--miro-type-balance-prefix-size);
+    }
+
+    .settings-balance-amount strong {
+      font-size: var(--miro-type-balance-size);
+      line-height: var(--miro-type-balance-line);
+      letter-spacing: -0.06em;
+    }
+
+    .settings-recharge-link {
+      min-width: 108px;
+      height: 42px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(142, 182, 155, 0.96), rgba(35, 83, 71, 0.98));
+      color: #ffffff;
+      font-size: var(--miro-type-control-size);
+      line-height: var(--miro-type-control-line);
+      font-weight: var(--miro-font-weight-bold);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 10px 22px rgba(35, 83, 71, 0.28);
+    }
+
+    .settings-recharge-link .material-symbols-outlined {
+      font-size: var(--miro-type-icon-row-size);
+    }
+
+    .settings-kpi {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0 22px;
+    }
+
+    .settings-kpi-card {
+      min-height: 86px;
+      border-radius: 24px;
+      background: var(--settings-surface);
+      border: 1px solid var(--settings-line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    .settings-kpi-card strong {
+      color: var(--settings-accent);
+      font-family: var(--font-display);
+      font-size: var(--miro-type-kpi-size);
+      line-height: var(--miro-type-kpi-line);
+      margin-bottom: 8px;
+      font-weight: var(--miro-font-weight-bold);
+    }
+
+    .settings-kpi-card span {
+      color: var(--settings-muted);
+      font-size: var(--miro-type-row-meta-size);
+      line-height: var(--miro-type-row-meta-line);
+      font-weight: var(--miro-font-weight-semibold);
+    }
+
+    .settings-group {
+      margin-bottom: 20px;
+    }
+
+    .settings-group-title {
+      margin: 0 0 10px 2px;
+      color: rgba(142, 182, 155, 0.74);
+      font-size: var(--miro-type-section-title-size);
+      line-height: var(--miro-type-section-title-line);
+      font-weight: var(--miro-font-weight-bold);
+      letter-spacing: 0.04em;
+    }
+
+    .settings-list {
+      overflow: hidden;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.022)),
+        rgba(10, 10, 10, 0.82);
+      border: 1px solid var(--settings-line);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    .settings-row {
+      min-height: 62px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--settings-text);
+      border-bottom: 1px solid var(--settings-line-soft);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .settings-row:last-child {
+      border-bottom: 0;
+    }
+
+    .settings-row:active {
+      transform: scale(0.992);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .settings-row-main {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-row-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--settings-accent);
+      background: rgba(35, 83, 71, 0.26);
+      border: 1px solid rgba(142, 182, 155, 0.12);
+    }
+
+    .settings-row-icon .material-symbols-outlined {
+      font-size: var(--miro-type-icon-row-size);
+    }
+
+    .settings-row-title {
+      display: block;
+      font-size: var(--miro-type-row-title-size);
+      line-height: var(--miro-type-row-title-line);
+      font-weight: var(--miro-font-weight-bold);
+      white-space: nowrap;
+    }
+
+    .settings-row-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--settings-muted);
+      font-size: var(--miro-type-row-meta-size);
+      line-height: var(--miro-type-row-meta-line);
+      font-weight: var(--miro-font-weight-semibold);
+      white-space: nowrap;
+    }
+
+    .settings-row-side {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--settings-muted);
+      font-size: var(--miro-type-control-size);
+      line-height: var(--miro-type-control-line);
+      white-space: nowrap;
+    }
+
+    .settings-row-side .material-symbols-outlined {
+      font-size: var(--miro-type-icon-chevron-size);
+      opacity: 0.72;
+    }
+
+    .settings-hidden-input {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      body.nexus-shell-body {
+        padding: 0;
+      }
+
+      .nexus-shell-device {
+        width: 100%;
+        height: 100dvh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body class="nexus-shell-body">
+  <div class="nexus-shell-device">
+    <div class="nexus-shell-screen">
+      <header class="settings-topbar">
+        <a class="settings-icon-button" href="#/nexus" aria-label="返回首页">
+          <span class="material-symbols-outlined">arrow_back_ios_new</span>
+        </a>
+        <h1>我的</h1>
+        <button class="settings-icon-button" type="button" aria-label="更多">
+          <span class="material-symbols-outlined">more_horiz</span>
+        </button>
+      </header>
+
+      <main class="settings-main">
+        <section class="settings-profile" aria-label="个人资料">
+          <div class="settings-profile-left">
+            <button class="settings-avatar-button" id="settingsAvatarButton" type="button" aria-label="更换头像">
+              <span class="settings-avatar-shell">
+                <img alt="个人头像" class="settings-avatar" id="settingsAvatarImage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" hidden>
+                <span class="settings-avatar-placeholder" id="settingsAvatarPlaceholder" aria-hidden="true">
+                  <span class="material-symbols-outlined">person</span>
+                </span>
+              </span>
+            </button>
+            <div class="settings-name-wrap">
+              <button class="settings-name-button is-placeholder" id="settingsNameButton" type="button">未设置昵称</button>
+              <span class="settings-member-chip">体验账户</span>
+            </div>
+          </div>
+          <a class="settings-profile-action" href="#/settings/account">账户服务</a>
+          <input class="settings-hidden-input" id="settingsAvatarInput" type="file" accept="image/*">
+        </section>
+
+        <section class="settings-balance-card" aria-label="余额与充值">
+          <p class="settings-balance-title">余额</p>
+          <div class="settings-balance-row">
+            <div class="settings-balance-amount">
+              <small>¥</small>
+              <strong>0.00</strong>
+            </div>
+            <a class="settings-recharge-link" href="#/settings/recharge">
+              <span>去充值</span>
+              <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="settings-kpi" aria-label="账户数据">
+          <div class="settings-kpi-card"><strong>0</strong><span>灵感菜谱</span></div>
+          <div class="settings-kpi-card"><strong>0</strong><span>归档记录</span></div>
+          <div class="settings-kpi-card"><strong>0</strong><span>风味准则</span></div>
+        </section>
+
+        <section class="settings-group">
+          <h2 class="settings-group-title">口味与约束</h2>
+          <div class="settings-list">
+            <a class="settings-row" href="#">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">restaurant</span></span>
+                <span>
+                  <span class="settings-row-title">常做风味</span>
+                  <span class="settings-row-subtitle">影响推荐菜谱口味</span>
+                </span>
+              </span>
+              <span class="settings-row-side"><span>未设置</span><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">science</span></span>
+                <span>
+                  <span class="settings-row-title">排除食材</span>
+                  <span class="settings-row-subtitle">生成时自动避开</span>
+                </span>
+              </span>
+              <span class="settings-row-side"><span>未设置</span><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">restaurant_menu</span></span>
+                <span>
+                  <span class="settings-row-title">营养目标</span>
+                  <span class="settings-row-subtitle">低糖低盐等约束</span>
+                </span>
+              </span>
+              <span class="settings-row-side"><span>未设置</span><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+          </div>
+        </section>
+
+        <section class="settings-group">
+          <h2 class="settings-group-title">账户服务</h2>
+          <div class="settings-list">
+            <a class="settings-row" href="#/settings/recharge">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">account_balance_wallet</span></span>
+                <span class="settings-row-title">余额与充值</span>
+              </span>
+              <span class="settings-row-side"><span>¥0.00</span><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#/settings/membership">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">workspace_premium</span></span>
+                <span class="settings-row-title">会员方案</span>
+              </span>
+              <span class="settings-row-side"><span>未开通</span><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#/settings/customer-service">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">support_agent</span></span>
+                <span class="settings-row-title">联系客服</span>
+              </span>
+              <span class="settings-row-side"><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+          </div>
+        </section>
+
+        <section class="settings-group">
+          <h2 class="settings-group-title">规则与关于</h2>
+          <div class="settings-list">
+            <a class="settings-row" href="#/settings/rules">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">contract</span></span>
+                <span class="settings-row-title">条款与规则</span>
+              </span>
+              <span class="settings-row-side"><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#/settings/privacy">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">privacy_tip</span></span>
+                <span class="settings-row-title">隐私与信息</span>
+              </span>
+              <span class="settings-row-side"><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+            <a class="settings-row" href="#/settings/about">
+              <span class="settings-row-main">
+                <span class="settings-row-icon"><span class="material-symbols-outlined">info</span></span>
+                <span class="settings-row-title">关于拍立食</span>
+              </span>
+              <span class="settings-row-side"><span class="material-symbols-outlined">chevron_right</span></span>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

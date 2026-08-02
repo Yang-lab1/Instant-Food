@@ -6,7 +6,8 @@ uvicorn[standard]==0.27.0
 python-multipart==0.0.6
 
 # Database & ORM
-supabase==2.3.4
+# Keep this aligned with current pydantic/httpx constraints for Vercel builds.
+supabase==2.6.0
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.25
 
@@ -26,5 +27,8 @@ python-dotenv==1.0.0
 # httpx 0.26.0 introduced the `proxy=` client argument used by gotrue 2.9.x.
 httpx==0.26.0
 tenacity==8.2.3
+# Normality model runtime
+numpy==2.1.3
+scikit-learn==1.6.1
 
 # Logging &

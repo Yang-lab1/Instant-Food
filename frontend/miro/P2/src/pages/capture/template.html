@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>拍立食 | 拍摄</title>
+  <link rel="stylesheet" href="wechat-unified.css" />
+  <style>
+    :root {
+      --color-bg-base: #000000;
+      --color-brand-primary: #235347;
+      --color-brand-accent: #8eb69b;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.76);
+      --color-border-subtle: rgba(255, 255, 255, 0.08);
+      --font-display: var(--miro-font-display);
+      --font-body: var(--miro-font-body);
+      --radius-card: 28px;
+      --radius-pill: 999px;
+      --shadow-deep: 0 30px 60px rgba(0, 0, 0, 0.42);
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(35, 83, 71, 0.28) 0%, rgba(35, 83, 71, 0) 28%),
+        radial-gradient(circle at 84% 18%, rgba(142, 182, 155, 0.1) 0%, rgba(142, 182, 155, 0) 22%),
+        linear-gradient(180deg, #050505 0%, #000000 100%);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .device {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: min(100%, 414px);
+      height: min(calc(100vh - 40px), 896px);
+      overflow: hidden;
+      border-radius: 40px;
+      background:
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 26%),
+        radial-gradient(circle at 28% 72%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 20%),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.98) 0%, rgba(40, 38, 32, 0.96) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: var(--shadow-deep), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      isolation: isolate;
+    }
+
+    .device::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.08) 24%, rgba(0, 0, 0, 0.28) 100%),
+        radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 18%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .status-bar,
+    .screen {
+      position: relative;
+      z-index: 1;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px 0;
+      font-family: var(--font-display);
+      font-size: var(--miro-type-status-size);
+      line-height: var(--miro-type-tight-line);
+      font-weight: var(--miro-font-weight-semibold);
+      letter-spacing: 0.02em;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.94);
+    }
+
+    .status-right svg {
+      display: block;
+    }
+
+    .battery {
+      position: relative;
+      width: 24px;
+      height: 12px;
+      border: 1.4px solid rgba(255, 255, 255, 0.9);
+      border-radius: 4px;
+    }
+
+    .battery::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: -3px;
+      width: 2px;
+      height: 4px;
+      border-radius: 1px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .island {
+      width: 122px;
+      height: 30px;
+      margin: 10px auto 0;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.88);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      display: grid;
+      place-items: center;
+    }
+
+    .island-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #38d26d;
+      box-shadow: 0 0 12px rgba(56, 210, 109, 0.5);
+    }
+
+    .screen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      padding: 34px 24px 0;
+      overflow: hidden;
+    }
+
+    .camera-feed {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 26%),
+        radial-gradient(circle at 28% 72%, rgba(35, 83, 71, 0.18) 0%, rgba(35, 83, 71, 0) 20%),
+        linear-gradient(90deg, rgba(17, 17, 17, 0.98) 0%, rgba(40, 38, 32, 0.96) 100%);
+    }
+
+    .camera-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #050505;
+    }
+
+    .camera-feed.is-environment .camera-preview {
+      transform: none;
+    }
+
+    .camera-feed::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 28%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.06) 34%, rgba(0, 0, 0, 0.12) 68%, rgba(0, 0, 0, 0.2) 100%);
+      pointer-events: none;
+    }
+
+    .camera-fallback {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 174px;
+      z-index: 2;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(10, 10, 12, 0.64);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .camera-fallback p {
+      margin: 0;
+      font-size: var(--miro-type-status-size);
+      line-height: var(--miro-type-helper-line);
+    }
+
+    .camera-fallback button {
+      margin-top: 10px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: var(--miro-type-status-size);
+      font-weight: var(--miro-font-weight-semibold);
+    }
+
+    .top-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 96px;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(22, 22, 22, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    .icon-button.is-active {
+      background: rgba(142, 182, 155, 0.22);
+      border-color: rgba(142, 182, 155, 0.52);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 10px 22px rgba(35, 83, 71, 0.28);
+    }
+
+    .icon-button.ghost {
+      background: transparent;
+      border-color: transparent;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .viewfinder {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 0;
+    }
+
+    .capture-row {
+      display: grid;
+      grid-template-columns: 68px 1fr 78px;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .capture-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      appearance: none;
+      -webkit-appearance: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .capture-label {
+      font-size: var(--miro-type-status-size);
+      line-height: var(--miro-type-status-line);
+      font-weight: var(--miro-font-weight-semibold);
+      color: rgba(255, 255, 255, 0.92);
+      letter-spacing: 0.01em;
+    }
+
+    .upload-tile,
+    .stack-tile {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      border-radius: 19px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .upload-tile {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.1));
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .upload-tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.36),
+        inset 0 -8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .upload-tile svg {
+      display: block;
+    }
+
+    .shutter-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 82px;
+    }
+
+    .shutter {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.96);
+      border: 4px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.24),
+        inset 0 -8px 16px rgba(214, 214, 214, 0.42);
+    }
+
+    .shutter::before {
+      content: "";
+      position: absolute;
+      inset: -9px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.95);
+    }
+
+    .stack-tile {
+      width: 74px;
+      height: 64px;
+      overflow: visible;
+      box-shadow: none;
+    }
+
+    .stack-photo {
+      position: absolute;
+      width: 42px;
+      height: 52px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    .stack-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.14));
+    }
+
+    .stack-photo.back {
+      left: -4px;
+      bottom: 3px;
+      transform: rotate(-11deg);
+      z-index: 0;
+    }
+
+    .stack-photo.middle {
+      left: 13px;
+      top: 3px;
+      transform: rotate(-4deg);
+      z-index: 1;
+    }
+
+    .stack-photo.front {
+      right: 2px;
+      top: 8px;
+      width: 44px;
+      height: 52px;
+      z-index: 2;
+    }
+
+    .stack-badge {
+      position: absolute;
+      top: -2px;
+      right: -4px;
+      z-index: 3;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #2a6255 0%, #21483f 100%);
+      color: #ffffff;
+      font-size: var(--miro-type-kicker-size);
+      line-height: var(--miro-type-tight-line);
+      font-weight: var(--miro-font-weight-bold);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.24);
+    }
+
+    .mode-rail {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      padding: 12px 24px 8px;
+      margin: 0 -24px;
+      background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, rgba(0, 0, 0, 0.16) 58%, rgba(0, 0, 0, 0.28) 100%);
+    }
+
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 116px;
+      height: 36px;
+      padding: 0 20px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.98);
+      font-family: var(--font-display);
+      font-size: var(--miro-type-mode-size);
+      line-height: var(--miro-type-mode-line);
+      font-weight: var(--miro-font-weight-semibold);
+      letter-spacing: -0.02em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+      transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mode-pill:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .mode-pill:active {
+      transform: scale(0.98);
+    }
+
+    .mode-pill.is-disabled,
+    .mode-pill[aria-disabled="true"] {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.56);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .mode-pill.is-disabled:active,
+    .mode-pill[aria-disabled="true"]:active {
+      transform: none;
+    }
+
+    .gallery-modal[hidden] {
+      display: none;
+    }
+
+    .gallery-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 24px;
+      background: rgba(4, 5, 7, 0.24);
+      backdrop-filter: blur(24px) saturate(1.08);
+      -webkit-backdrop-filter: blur(24px) saturate(1.08);
+    }
+
+    .gallery-panel {
+      width: min(100%, 318px);
+      padding: 18px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(28, 31, 34, 0.88), rgba(11, 13, 16, 0.94));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .gallery-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .gallery-pill {
+      min-width: 56px;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.92);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: var(--miro-type-caption-tight-size);
+      line-height: var(--miro-type-tight-line);
+      font-weight: var(--miro-font-weight-semibold);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .gallery-pill[disabled] {
+      opacity: 0.34;
+      cursor: not-allowed;
+    }
+
+    .gallery-counter {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+      font-size: var(--miro-type-caption-tight-size);
+      line-height: var(--miro-type-caption-tight-line);
+      font-weight: var(--miro-font-weight-semibold);
+      color: rgba(255, 255, 255, 0.82);
+      letter-spacing: 0.01em;
+    }
+
+    .gallery-carousel {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x mandatory;
+      touch-action: pan-x;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      cursor: grab;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .gallery-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-carousel.is-dragging {
+      cursor: grabbing;
+      user-select: none;
+    }
+
+    .gallery-carousel.is-dragging * {
+      pointer-events: none;
+    }
+
+    .gallery-viewport {
+      position: relative;
+    }
+
+    .gallery-slide {
+      position: relative;
+      flex: 0 0 100%;
+      scroll-snap-align: center;
+      aspect-ratio: 0.74;
+      background: rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+    }
+
+    .gallery-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(18, 19, 22, 0.68);
+      color: rgba(255, 255, 255, 0.94);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--miro-type-icon-size);
+      line-height: var(--miro-type-tight-line);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: translateY(-50%);
+    }
+
+    .gallery-nav.left {
+      left: 10px;
+    }
+
+    .gallery-nav.right {
+      right: 10px;
+    }
+
+    .gallery-nav[disabled] {
+      opacity: 0.28;
+      cursor: not-allowed;
+    }
+
+    .gallery-empty {
+      flex: 0 0 100%;
+      aspect-ratio: 0.74;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 28px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.58);
+    }
+
+    .gallery-empty strong {
+      font-family: var(--font-display);
+      font-size: var(--miro-type-empty-title-size);
+      line-height: var(--miro-type-empty-title-line);
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: -0.03em;
+    }
+
+    .gallery-hint {
+      margin: 14px 0 0;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: var(--miro-type-status-size);
+      line-height: var(--miro-type-status-line);
+      letter-spacing: 0.01em;
+    }
+
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      margin: 2px auto 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      opacity: 0.42;
+    }
+
+    @media (max-height: 760px) {
+      body {
+        padding: 12px;
+      }
+
+      .device {
+        height: calc(100vh - 24px);
+      }
+
+      .screen {
+        padding-top: 28px;
+      }
+
+      .top-actions {
+        margin-bottom: 72px;
+      }
+
+      .capture-row {
+        gap: 20px;
+      }
+
+      .mode-rail {
+        padding-top: 12px;
+      }
+    }
+  </style>
+  <style data-phase5-baseline>
+    :root {
+      --brand-primary: #235347;
+      --brand-accent: #8EB69B;
+      --space-8: 8px;
+      --space-12: 12px;
+      --space-16: 16px;
+      --space-20: 20px;
+      --space-24: 24px;
+      --space-32: 32px;
+      --radius-device: 40px;
+      --radius-card: 28px;
+      --radius-pill: 999px;
+      --font-display: var(--miro-font-display);
+      --font-body: var(--miro-font-body);
+      --motion-fast: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+      --motion-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    html, body { font-family: var(--font-body); }
+    h1, h2, h3, h4, .capture-label { font-family: var(--font-display); }
+    .device, .nexus-shell-device { border-radius: var(--radius-device) !important; }
+    .upload-tile, .stack-tile, .image-modal-content, .preview-chip, .camera-overlay, .sheet, .panel { border-radius: var(--radius-card) !important; }
+    .capture-button, .confirm-button, .chip, .pill, .gallery-count, .cta, .icon-button, .flash-toggle {
+      transition: transform var(--motion-fast), opacity var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast), box-shadow var(--motion-fast);
+    }
+    button:active, .capture-button:active, .confirm-button:active, .icon-button:active { transform: scale(0.98); }
+    .text-primary { color: var(--brand-primary) !important; }
+    .bg-primary { background-color: var(--brand-primary) !important; }
+    .border-primary { border-color: var(--brand-primary) !important; }
+  </style>
+</head>
+<body>
+  <main class="device" aria-label="拍摄界面">
+    <div class="status-bar">
+      <span>13:25</span>
+      <div class="status-right" aria-hidden="true">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <path d="M2 10.5h1.5V8.7H2v1.8Zm3.4 0h1.5V6.9H5.4v3.6Zm3.4 0h1.5V5.1H8.8v5.4Zm3.4 0h1.5V3.3h-1.5v7.2Z" fill="currentColor" />
+        </svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <path d="M1.2 4.7a8.8 8.8 0 0 1 13.6 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          <path d="M3.6 7a5.4 5.4 0 0 1 8.8 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          <path d="M6 9.3a2 2 0 0 1 4 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+        </svg>
+        <span class="battery"></span>
+      </div>
+    </div>
+
+    <div class="island" aria-hidden="true">
+      <span class="island-dot"></span>
+    </div>
+
+    <section class="screen">
+      <div class="camera-feed" id="cameraFeed">
+        <video id="cameraPreview" class="camera-preview" autoplay playsinline muted></video>
+        <div class="camera-fallback" id="cameraFallback" hidden>
+          <p id="cameraFallbackText">无法访问设备相机，请允许权限，或先使用上传功能。</p>
+          <button id="retryCameraButton" type="button">重新开启相机</button>
+        </div>
+      </div>
+
+      <header class="top-actions camera-topbar wx-miniapp-nav" data-title="拍摄">
+        <button class="icon-button ghost" type="button" aria-label="关闭">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <path d="M6 6l14 14M20 6L6 20" stroke="white" stroke-width="2.4" stroke-linecap="round" />
+          </svg>
+        </button>
+
+        <h1 class="wx-nav-title">拍摄</h1>
+
+        <button class="icon-button" id="flashToggleButton" type="button" aria-label="手电筒" aria-pressed="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.2 3.6h3.6l.8 3.3H9.4l.8-3.3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+            <path d="M9.8 6.9h4.4v4.2l-1.1 1.5v5.8h-2.2v-5.8l-1.1-1.5V6.9Z" stroke="white" stroke-width="1.8" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="viewfinder">
+        <div class="capture-row">
+          <button class="capture-action" id="uploadPhotoButton" type="button" aria-label="上传图片">
+            <span class="upload-tile" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M14 8.8v8.2M10.9 11.9 14 8.8l3.1 3.1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9.6 19.2h8.8" stroke="#8eb69b" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="capture-label">上传</span>
+          </button>
+
+          <div class="shutter-wrap">
+            <button class="shutter" id="shutterButton" type="button" aria-label="拍照"></button>
+          </div>
+
+          <button class="capture-action" id="openGalleryButton" type="button" aria-label="查看已拍图片">
+            <span class="stack-tile" aria-hidden="true">
+              <span class="stack-photo back"></span>
+              <span class="stack-photo middle"></span>
+              <span class="stack-photo front"></span>
+              <span class="stack-badge" id="capturedCountBadge">0</span>
+            </span>
+            <span class="capture-label">已拍</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mode-rail">
+        <a class="mode-pill" id="confirmCaptureButton" href="分子重构台.html" aria-label="确认拍摄并进入下一步">确认拍摄</a>
+      </div>
+
+      <input id="galleryUploadInput" type="file" accept="image/*" multiple hidden />
+      <canvas id="cameraCaptureCanvas" hidden aria-hidden="true"></canvas>
+
+      <div class="gallery-modal" id="galleryModal" hidden aria-hidden="true">
+        <div class="gallery-panel" role="dialog" aria-modal="true" aria-labelledby="galleryCounter">
+          <div class="gallery-toolbar">
+            <button class="gallery-pill" id="closeGalleryButton" data-shell-ignore-camera-close="true" type="button" aria-label="关闭已拍预览">关闭</button>
+            <div class="gallery-counter" id="galleryCounter">1 / 3</div>
+            <button class="gallery-pill" id="deletePhotoButton" type="button" aria-label="删除当前图片">
+              删除
+            </button>
+          </div>
+          <div class="gallery-viewport">
+            <button class="gallery-nav left" id="previousPhotoButton" type="button" aria-label="查看上一张" disabled>‹</button>
+            <div class="gallery-carousel" id="galleryCarousel"></div>
+            <button class="gallery-nav right" id="nextPhotoButton" type="button" aria-label="查看下一张" disabled>›</button>
+          </div>
+          <p class="gallery-hint">在中间查看已拍内容，左右滑动浏览，右上角可以删除。</p>
+        </div>
+      </div>
+
+      <div class="home-indicator" aria-hidden="true"></div>
+    </section>
+  </main>
+  <script src="instant-food-api-bridge.js"></script>
+  <script>
+    (() => {
+      const bridge = window.InstantFoodApiBridge;
+      const uploadPhotoButton = document.getElementById("uploadPhotoButton");
+      const openGalleryButton = document.getElementById("openGalleryButton");
+      const shutterButton = document.getElementById("shutterButton");
+      const galleryUploadInput = document.getElementById("galleryUploadInput");
+      const galleryModal = document.getElementById("galleryModal");
+      const galleryCarousel = document.getElementById("galleryCarousel");
+      const galleryCounter = document.getElementById("galleryCounter");
+      const closeGalleryButton = document.getElementById("closeGalleryButton");
+      const deletePhotoButton = document.getElementById("deletePhotoButton");
+      const previousPhotoButton = document.getElementById("previousPhotoButton");
+      const nextPhotoButton = document.getElementById("nextPhotoButton");
+      const capturedCountBadge = document.getElementById("capturedCountBadge");
+      const stackBack = document.querySelector(".stack-photo.back");
+      const stackMiddle = document.querySelector(".stack-photo.middle");
+      const stackFront = document.querySelector(".stack-photo.front");
+      const cameraFeed = document.getElementById("cameraFeed");
+      const cameraPreview = document.getElementById("cameraPreview");
+      const cameraFallback = document.getElementById("cameraFallback");
+      const cameraFallbackText = document.getElementById("cameraFallbackText");
+      const retryCameraButton = document.getElementById("retryCameraButton");
+      const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
+      const flashToggleButton = document.getElementById("flashToggleButton");
+      const confirmButton = document.getElementById("confirmCaptureButton");
+
+      const presetPhotos = [];
+
+      const state = {
+        currentIndex: 0,
+        photos: presetPhotos.map((src, index) => ({
+          id: "preset-" + index,
+          src,
+          kind: "preset"
+        }))
+      };
+      const cameraState = {
+        stream: null,
+        openPromise: null,
+        activeFacingMode: "",
+        torchSupported: false,
+        torchEnabled: false
+      };
+
+      function clampIndex(index) {
+        if (!state.photos.length) return 0;
+        return Math.max(0, Math.min(index, state.photos.length - 1));
+      }
+
+      function revokePhoto(photo) {
+        if (photo && photo.kind === "upload" && photo.objectUrl) {
+          URL.revokeObjectURL(photo.objectUrl);
+        }
+      }
+
+      function showCameraFallback(message) {
+        if (!cameraFallback || !cameraFallbackText) return;
+        cameraFallbackText.textContent = message || "无法访问设备相机，请允许权限，或先使用上传功能。";
+        cameraFallback.hidden = false;
+      }
+
+      function hideCameraFallback() {
+        if (!cameraFallback) return;
+        cameraFallback.hidden = true;
+      }
+
+      function updateTorchUI() {
+        if (!flashToggleButton) return;
+        flashToggleButton.classList.toggle("is-active", cameraState.torchEnabled);
+        flashToggleButton.setAttribute("aria-pressed", cameraState.torchEnabled ? "true" : "false");
+        flashToggleButton.setAttribute(
+          "aria-label",
+          cameraState.torchEnabled ? "关闭手电筒" : "打开手电筒"
+        );
+      }
+
+      function explainCameraError(error) {
+        const name = String(error?.name || "").toLowerCase();
+        if (name.includes("notallowed") || name.includes("permission")) {
+          return "相机权限被拒绝，请在浏览器设置里允许相机后重试。";
+        }
+        if (name.includes("notfound") || name.includes("overconstrained")) {
+          return "当前设备未检测到可用相机，请检查系统相机是否可用。";
+        }
+        if (name.includes("notreadable")) {
+          return "相机被其他应用占用，请关闭占用后重试。";
+        }
+        return "相机初始化失败，请点击“重新开启相机”再试。";
+      }
+
+      function stopCameraStream() {
+        cameraState.torchEnabled = false;
+        cameraState.torchSupported = false;
+        updateTorchUI();
+        if (cameraState.stream) {
+          cameraState.stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+          cameraState.stream = null;
+        }
+        cameraState.activeFacingMode = "";
+        if (cameraPreview) {
+          cameraPreview.srcObject = null;
+        }
+      }
+
+      async function requestCameraStream(preferEnvironment = true) {
+        if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
+          showCameraFallback("当前浏览器不支持网页相机拍摄，请使用上传。");
+          return false;
+        }
+
+        const cameraAttempts = preferEnvironment
+          ? [
+              { video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: true, audio: false }
+            ]
+          : [
+              { video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false },
+              { video: true, audio: false }
+            ];
+
+        let lastError = null;
+        stopCameraStream();
+        hideCameraFallback();
+
+        for (const constraints of cameraAttempts) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            cameraState.stream = stream;
+            if (cameraPreview) {
+              cameraPreview.srcObject = stream;
+              try {
+                await cameraPreview.play();
+              } catch (playError) {}
+            }
+
+            const videoTrack = stream.getVideoTracks()[0];
+            const settings = videoTrack?.getSettings?.() || {};
+            cameraState.activeFacingMode = String(settings.facingMode || "");
+            const capabilities = videoTrack?.getCapabilities?.() || {};
+            cameraState.torchSupported = Boolean(capabilities && Object.prototype.hasOwnProperty.call(capabilities, "torch"));
+            cameraState.torchEnabled = false;
+            updateTorchUI();
+            if (cameraFeed) {
+              cameraFeed.classList.toggle("is-environment", cameraState.activeFacingMode === "environment");
+            }
+            hideCameraFallback();
+            return true;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        showCameraFallback(explainCameraError(lastError));
+        return false;
+      }
+
+      function ensureCameraStream(preferEnvironment = true) {
+        if (cameraState.openPromise) {
+          return cameraState.openPromise;
+        }
+
+        cameraState.openPromise = requestCameraStream(preferEnvironment).finally(() => {
+          cameraState.openPromise = null;
+        });
+        return cameraState.openPromise;
+      }
+
+      function captureFromPreview() {
+        const width = Number(cameraPreview?.videoWidth || 0);
+        const height = Number(cameraPreview?.videoHeight || 0);
+        if (!width || !height || !cameraCaptureCanvas) {
+          return "";
+        }
+
+        cameraCaptureCanvas.width = width;
+        cameraCaptureCanvas.height = height;
+        const ctx = cameraCaptureCanvas.getContext("2d", { alpha: false });
+        if (!ctx) return "";
+        ctx.drawImage(cameraPreview, 0, 0, width, height);
+        return cameraCaptureCanvas.toDataURL("image/jpeg", 0.92);
+      }
+
+      async function setTorchEnabled(enabled) {
+        const track = cameraState.stream?.getVideoTracks?.()[0];
+        if (!track || !cameraState.torchSupported) {
+          return false;
+        }
+
+        try {
+          await track.applyConstraints({
+            advanced: [{ torch: Boolean(enabled) }]
+          });
+          cameraState.torchEnabled = Boolean(enabled);
+          updateTorchUI();
+          return true;
+        } catch (error) {
+          showCameraFallback("当前设备不支持网页控制手电筒。");
+          cameraState.torchEnabled = false;
+          updateTorchUI();
+          return false;
+        }
+      }
+
+      function updateStackPreview() {
+        const previewTargets = [stackBack, stackMiddle, stackFront];
+        const latestThree = state.photos.slice(-3);
+
+        previewTargets.forEach((target, index) => {
+          const photo = latestThree[index];
+          if (!target) return;
+          if (photo) {
+            target.style.backgroundImage = 'url("' + photo.src + '")';
+            target.style.opacity = "1";
+            target.style.transform = "";
+          } else {
+            target.style.backgroundImage = "none";
+            target.style.opacity = "0";
+            target.style.transform = "scale(0.9)";
+          }
+        });
+
+        capturedCountBadge.textContent = String(state.photos.length);
+        updateConfirmState();
+      }
+
+      function updateConfirmState() {
+        if (!confirmButton) return;
+        const hasPhoto = state.photos.length > 0;
+        confirmButton.classList.toggle("is-disabled", !hasPhoto);
+        confirmButton.setAttribute("aria-disabled", hasPhoto ? "false" : "true");
+        confirmButton.setAttribute(
+          "aria-label",
+          hasPhoto ? "确认拍摄并进入下一步" : "请先拍摄或上传图片后再确认"
+        );
+      }
+
+      function updateCounter() {
+        if (!state.photos.length) {
+          galleryCounter.textContent = "0 / 0";
+          previousPhotoButton.disabled = true;
+          nextPhotoButton.disabled = true;
+          return;
+        }
+
+        galleryCounter.textContent = (state.currentIndex + 1) + " / " + state.photos.length;
+        previousPhotoButton.disabled = state.currentIndex <= 0;
+        nextPhotoButton.disabled = state.currentIndex >= state.photos.length - 1;
+      }
+
+      function scrollToIndex(index, behavior = "smooth") {
+        state.currentIndex = clampIndex(index);
+        updateCounter();
+        galleryCarousel.scrollTo({
+          left: galleryCarousel.clientWidth * state.currentIndex,
+          behavior
+        });
+      }
+
+      function renderGallery() {
+        if (!state.photos.length) {
+          galleryCarousel.innerHTML = `
+            <div class="gallery-empty">
+              <strong>还没有已拍内容</strong>
+              <span>先拍一张，或者从系统相册里挑几张进来。</span>
+            </div>
+          `;
+          deletePhotoButton.disabled = true;
+          updateCounter();
+          return;
+        }
+
+        galleryCarousel.innerHTML = state.photos.map((photo, index) => `
+          <div class="gallery-slide" data-gallery-index="${index}">
+            <img src="${photo.src}" alt="已拍内容 ${index + 1}" />
+          </div>
+        `).join("");
+
+        deletePhotoButton.disabled = false;
+        updateCounter();
+        requestAnimationFrame(() => {
+          scrollToIndex(state.currentIndex, "auto");
+        });
+      }
+
+      function enableGallerySwipe(scroller) {
+        if (!scroller) return;
+
+        const dragState = {
+          isPointerDown: false,
+          isDragging: false,
+          pointerId: null,
+          startX: 0,
+          startY: 0,
+          startScrollLeft: 0
+        };
+
+        function finishDrag() {
+          dragState.isPointerDown = false;
+          dragState.pointerId = null;
+          window.requestAnimationFrame(() => {
+            dragState.isDragging = false;
+            scroller.classList.remove("is-dragging");
+          });
+        }
+
+        scroller.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          dragState.isPointerDown = true;
+          dragState.pointerId = event.pointerId;
+          dragState.startX = event.clientX;
+          dragState.startY = event.clientY;
+          dragState.startScrollLeft = scroller.scrollLeft;
+        });
+
+        scroller.addEventListener("pointermove", (event) => {
+          if (!dragState.isPointerDown || dragState.pointerId !== event.pointerId) return;
+
+          const deltaX = event.clientX - dragState.startX;
+          const deltaY = event.clientY - dragState.startY;
+
+          if (!dragState.isDragging) {
+            if (Math.abs(deltaX) < 8 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+            dragState.isDragging = true;
+            scroller.classList.add("is-dragging");
+          }
+
+          scroller.scrollLeft = dragState.startScrollLeft - deltaX;
+        });
+
+        scroller.addEventListener("pointerup", finishDrag);
+        scroller.addEventListener("pointercancel", finishDrag);
+        scroller.addEventListener("pointerleave", (event) => {
+          if (dragState.isDragging && dragState.pointerId === event.pointerId) {
+            finishDrag();
+          }
+        });
+      }
+
+      function openGallery(index = state.currentIndex) {
+        state.currentIndex = clampIndex(index);
+        galleryModal.hidden = false;
+        galleryModal.setAttribute("aria-hidden", "false");
+        renderGallery();
+      }
+
+      function closeGallery() {
+        galleryModal.hidden = true;
+        galleryModal.setAttribute("aria-hidden", "true");
+      }
+
+      function addPhotos(photoEntries) {
+        if (!photoEntries.length) return;
+        state.photos.push(...photoEntries);
+        state.currentIndex = state.photos.length - 1;
+        updateStackPreview();
+      }
+
+      function getCurrentPhoto() {
+        if (!state.photos.length) {
+          return null;
+        }
+
+        return state.photos[clampIndex(state.currentIndex)] || state.photos[state.photos.length - 1] || null;
+      }
+
+      function persistCurrentPhotoForGeneration() {
+        if (!bridge) {
+          return "";
+        }
+
+        const photo = getCurrentPhoto();
+        const dataUrl = bridge.extractPhotoDataUrl(photo);
+        bridge.writeCapturedImage(dataUrl);
+        return dataUrl;
+      }
+
+      uploadPhotoButton.addEventListener("click", () => {
+        galleryUploadInput.click();
+      });
+
+      galleryUploadInput.addEventListener("change", async (event) => {
+        const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("image/"));
+        const uploads = await Promise.all(files.map(async (file, index) => {
+          const objectUrl = URL.createObjectURL(file);
+          let dataUrl = "";
+          if (bridge) {
+            try {
+              dataUrl = await bridge.fileToDataUrl(file);
+            } catch (error) {}
+          }
+          return {
+            id: "upload-" + Date.now() + "-" + index,
+            src: objectUrl,
+            objectUrl,
+            kind: "upload",
+            dataUrl
+          };
+        }));
+
+        addPhotos(uploads);
+        event.target.value = "";
+      });
+
+      shutterButton.addEventListener("click", async () => {
+        const hasStream = Boolean(cameraState.stream);
+        if (!hasStream) {
+          const opened = await ensureCameraStream(true);
+          if (!opened) return;
+        }
+
+        const capturedSrc = captureFromPreview();
+        if (!capturedSrc) {
+          showCameraFallback("相机还在初始化，请稍后再拍一张。");
+          return;
+        }
+
+        addPhotos([
+          {
+            id: "capture-" + Date.now(),
+            src: capturedSrc,
+            kind: "capture",
+            dataUrl: capturedSrc
+          }
+        ]);
+      });
+
+      openGalleryButton.addEventListener("click", () => {
+        openGallery(0);
+      });
+
+      closeGalleryButton.addEventListener("click", closeGallery);
+      previousPhotoButton.addEventListener("click", () => {
+        scrollToIndex(state.currentIndex - 1);
+      });
+      nextPhotoButton.addEventListener("click", () => {
+        scrollToIndex(state.currentIndex + 1);
+      });
+
+      deletePhotoButton.addEventListener("click", () => {
+        if (!state.photos.length) return;
+        const [removed] = state.photos.splice(state.currentIndex, 1);
+        revokePhoto(removed);
+        state.currentIndex = clampIndex(state.currentIndex);
+        updateStackPreview();
+        renderGallery();
+      });
+
+      galleryModal.addEventListener("click", (event) => {
+        if (event.target === galleryModal) {
+          closeGallery();
+        }
+      });
+
+      galleryCarousel.addEventListener("scroll", () => {
+        if (!state.photos.length || !galleryCarousel.clientWidth) return;
+        const nextIndex = Math.round(galleryCarousel.scrollLeft / galleryCarousel.clientWidth);
+        if (nextIndex !== state.currentIndex) {
+          state.currentIndex = clampIndex(nextIndex);
+          updateCounter();
+        }
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !galleryModal.hidden) {
+          closeGallery();
+        }
+      });
+
+      retryCameraButton?.addEventListener("click", () => {
+        ensureCameraStream(true);
+      });
+
+      flashToggleButton?.addEventListener("click", async () => {
+        if (!cameraState.stream) {
+          const opened = await ensureCameraStream(true);
+          if (!opened) return;
+        }
+
+        if (!cameraState.torchSupported) {
+          showCameraFallback("当前浏览器暂不支持网页手电筒控制。");
+          return;
+        }
+
+        await setTorchEnabled(!cameraState.torchEnabled);
+      });
+
+      window.addEventListener("beforeunload", () => {
+        stopCameraStream();
+        state.photos.forEach(revokePhoto);
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopCameraStream();
+        }
+      });
+
+      window.addEventListener("pageshow", () => {
+        if (!document.hidden) {
+          ensureCameraStream(true);
+        }
+      });
+
+      const closeButton = document.querySelector(".icon-button.ghost");
+
+      if (confirmButton) {
+        confirmButton.addEventListener("click", (event) => {
+          if (!state.photos.length) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === "function") {
+              event.stopImmediatePropagation();
+            }
+            updateConfirmState();
+            return;
+          }
+
+          if (bridge) {
+            bridge.clearGenerationResult();
+          }
+          persistCurrentPhotoForGeneration();
+        }, true);
+      }
+
+      if (closeButton) {
+        closeButton.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          stopCameraStream();
+
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "stage2-route", route: "nexus" }, "*");
+            return;
+          }
+
+          window.location.href = "Nexus.html";
+        });
+      }
+
+      updateStackPreview();
+      updateCounter();
+      enableGallerySwipe(galleryCarousel);
+      ensureCameraStream(true);
+    })();
+  </script>
+</body>
+</html>
+

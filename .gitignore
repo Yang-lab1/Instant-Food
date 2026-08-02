@@ -42,3 +42,18 @@ archive/validation/**
 !archive/validation/2026-03-26-formal-entry-switch-acceptance/overlay-states.json
 !archive/validation/2026-03-26-formal-entry-switch-acceptance/validation-result.json
 !archive/validation/2026-03-26-formal-entry-switch-acceptance/validation-summary.md
+
+.vercel
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local archives and generated media
+archive/misc/media/
+archive/misc/root-cleanup/
+archive/browser-profiles/
